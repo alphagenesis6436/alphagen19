@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "KimberlyOp", group = "Default")
-//@Disabled
+@Disabled
 public class KimberlyOp extends OpMode {
     //Declare any motors, servos, and sensors
     Servo clawArm; //180

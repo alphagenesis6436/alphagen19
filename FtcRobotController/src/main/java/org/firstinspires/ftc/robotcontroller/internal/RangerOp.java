@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "RangerOp", group = "Default")
-//@Disabled
+@Disabled
 public class RangerOp extends OpMode {
     //Declare any motors
     DcMotor leftDrive;
