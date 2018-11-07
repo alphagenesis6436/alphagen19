@@ -5,33 +5,49 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Sabrina on 10/13/2018.
+ * Created by Ben on 11/5/2018.
  */
 
-@TeleOp(name = "LatchTileOp", group = "Default")
+@TeleOp(name = "DeathBoxOp", group = "Default")
 //@Disabled
-public class LatchTileOp extends OpMode {
-    //Declare any motors
+public class DeathBoxOp extends OpMode {
+    //Declare any motors, servos, or sensors
     DcMotor FL; //left if forward
     DcMotor FR;
     DcMotor BL;
     DcMotor BR;
     DcMotor LA;
-    //Declare any variables & constants pertaining to drive train
+    DcMotor intakeLeft;
+    DcMotor intakeRight;
+    Servo PulleyServo;
+    Servo Marker;
+    //Declare any variables & constants pertaining to robot mechanism (i.e drive train)
     final double DRIVE_PWR_MAX = 0.80;
     double currentLeftPwr = 0.0;
     double currentRightPwr = 0.0;
     final double LATCH_PWR = 0.80;
     double currentLatchPwr = 0.0;
+    final double MAX_INTAKE_PWR = 0.8;
+    double leftPwr = 0.0;
+    double rightPwr = 0.0;
+    double currentPulleySpeed = 0.5;
+    final double START_MARK_POS = 0.0;
+    double currentMarkPos = START_MARK_POS;
+    final double MIN_MARKER_POS = 0;
+    final double MAX_MARKER_POS = 0.75;
+    final double MAX_PULLEY_SPEED = (1.00) / 2;
     DriveMode driveMode = DriveMode.TANKDRIVE;
 
-    public LatchTileOp() {}
+    public DeathBoxOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
+
+
         FL = hardwareMap.dcMotor.get("fl");
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
         BL = hardwareMap.dcMotor.get("bl");
@@ -42,6 +58,13 @@ public class LatchTileOp extends OpMode {
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
         LA = hardwareMap.dcMotor.get("la");
         LA.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeLeft = hardwareMap.dcMotor.get("il");
+        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeRight = hardwareMap.dcMotor.get("ir");
+        intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        //Initialize Servos
+        PulleyServo = hardwareMap.servo.get("ps");
+        Marker = hardwareMap.servo.get("mk");
 
         telemetry();
     }
@@ -61,6 +84,9 @@ public class LatchTileOp extends OpMode {
         //Add in update methods for specific robot mechanisms
         updateDriveTrain();
         updateLatch();
+        updateDrawBridgeIntake();
+        updateMarker();
+
     }
 
     //Controlled by Driver 1
@@ -94,19 +120,44 @@ public class LatchTileOp extends OpMode {
                 break;
         }
     }
+    //Controlled by Driver 2
+    //step 1: Press DPAD up or down to move latch up or down.
     void updateLatch() {
         currentLatchPwr = 0.0;
-        if(gamepad1.dpad_up) {
+        if(gamepad2.dpad_up) {
             currentLatchPwr = LATCH_PWR;
         }
-        else if (gamepad1.dpad_down) {
+        else if (gamepad2.dpad_down) {
             currentLatchPwr = -LATCH_PWR;
+        }
+    }
+    //Controlled by Driver 2
+    //step 1: Push Left Stick up or down to move intake.
+    void updateDrawBridgeIntake() {
+        leftPwr = -gamepad2.left_stick_y*MAX_INTAKE_PWR;
+        rightPwr = -gamepad2.left_stick_y*MAX_INTAKE_PWR;
+        currentPulleySpeed = 0.5;
+        if(gamepad2.dpad_right) {
+            currentPulleySpeed = MAX_PULLEY_SPEED;
+        }
+        else if (gamepad2.dpad_left) {
+            currentPulleySpeed = -MAX_PULLEY_SPEED;
+        }
+    }
+    //Controlled by Driver 2
+    //Press A to move marker arm up, Press Y to move marker arm down
+    void updateMarker() {
+        if(gamepad2.a) {
+            currentMarkPos = MIN_MARKER_POS;
+        }
+        else if (gamepad2.y) {
+            currentMarkPos = MAX_MARKER_POS;
         }
     }
 
 
     void initialization() {
-        //Clip and Initialize Drive Train
+        //Clip and Initialize Robot Mechanisms
         currentLeftPwr = Range.clip(currentLeftPwr, -DRIVE_PWR_MAX, DRIVE_PWR_MAX);
         FL.setPower(currentLeftPwr);
         BL.setPower(currentLeftPwr);
@@ -115,6 +166,10 @@ public class LatchTileOp extends OpMode {
         BR.setPower(currentRightPwr);
         currentLatchPwr = Range.clip(currentLatchPwr, -LATCH_PWR, LATCH_PWR);
         LA.setPower(currentLatchPwr);
+        leftPwr = Range.clip(leftPwr, -MAX_INTAKE_PWR, MAX_INTAKE_PWR);
+        intakeLeft.setPower(leftPwr);
+        rightPwr = Range.clip(rightPwr, -MAX_INTAKE_PWR,MAX_INTAKE_PWR);
+        intakeRight.setPower(rightPwr);
 
     }
     void telemetry() {
@@ -122,6 +177,8 @@ public class LatchTileOp extends OpMode {
         telemetry.addData("Left Drive Pwr", FL.getPower());
         telemetry.addData("Right Drive Pwr", BR.getPower());
         telemetry.addData("Latch Pwr", LA.getPower());
+        telemetry.addData("Left Intake Pwr", intakeLeft.getPower());
+        telemetry.addData("Right Intake Pwr", intakeRight.getPower());
 
     }
 
