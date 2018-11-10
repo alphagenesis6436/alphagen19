@@ -1,11 +1,21 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import java.util.ArrayList;
 
 /**
  * Created by Ben on 11/5/2018.
@@ -24,9 +34,13 @@ public class DeathBoxOp extends OpMode {
     DcMotor intakeRight;
     Servo LatchServo;
     Servo Marker;
+    BNO055IMU imu; //For detecting rotation
+    Orientation angles;
 
     //Declare any variables & constants pertaining to Drive Train
     final double DRIVE_PWR_MAX = 0.80;
+    final int COUNTS_PER_REVOLUTION = 1120; //AndyMark Motors
+    final double DRIVE_GEAR_RATIO = 1.0 / 1.0; //Driven / Driver
     double currentLeftPwr = 0.0;
     double currentRightPwr = 0.0;
     DriveMode driveMode = DriveMode.TANKDRIVE;
@@ -43,13 +57,17 @@ public class DeathBoxOp extends OpMode {
     double currentLatchSpeed = 0.5;
 
     //Declare any variables & constants pertaining to Marker
-    final double START_MARK_POS = 0.0;
+    final double START_MARK_POS = 1.0;
     double currentMarkPos = START_MARK_POS;
-    final double MIN_MARKER_POS = 0;
-    final double MAX_MARKER_POS = 0.75;
+    final double MIN_MARKER_POS = 0.25; //drop pos
+    final double MAX_MARKER_POS = 1.00; //start pos
 
 
     public DeathBoxOp() {}
+
+    @Override public void start() {
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+    }
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -61,15 +79,22 @@ public class DeathBoxOp extends OpMode {
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
         BR = hardwareMap.dcMotor.get("br");
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
-        LA = hardwareMap.dcMotor.get("la");
-        LA.setDirection(DcMotorSimple.Direction.FORWARD);
+        //LA = hardwareMap.dcMotor.get("la");
+        //LA.setDirection(DcMotorSimple.Direction.FORWARD);
         //intakeLeft = hardwareMap.dcMotor.get("il");
         //intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //intakeRight = hardwareMap.dcMotor.get("ir");
         //intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
         //Initialize Servos
-        LatchServo = hardwareMap.servo.get("ls");
+        //LatchServo = hardwareMap.servo.get("ls");
         Marker = hardwareMap.servo.get("mk");
+        //Initialize Sensors
+        BNO055IMU.Parameters parameterz = new BNO055IMU.Parameters();
+        parameterz.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameterz.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameterz.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameterz);
 
         telemetry();
     }
@@ -88,7 +113,7 @@ public class DeathBoxOp extends OpMode {
     void updateData() {
         //Add in update methods for specific robot mechanisms
         updateDriveTrain();
-        updateLatch();
+        //updateLatch();
         //updateDrawBridgeIntake();
         updateMarker();
 
@@ -163,12 +188,12 @@ public class DeathBoxOp extends OpMode {
         currentRightPwr = Range.clip(currentRightPwr, -DRIVE_PWR_MAX, DRIVE_PWR_MAX);
         FR.setPower(currentRightPwr);
         BR.setPower(currentRightPwr);
-        currentLatchPwr = Range.clip(currentLatchPwr, -LATCH_PWR, LATCH_PWR);
-        LA.setPower(currentLatchPwr);
+        //currentLatchPwr = Range.clip(currentLatchPwr, -LATCH_PWR, LATCH_PWR);
+        //LA.setPower(currentLatchPwr);
         currentMarkPos = Range.clip(currentMarkPos, MIN_MARKER_POS, MAX_MARKER_POS);
         Marker.setPosition(currentMarkPos);
-        currentLatchSpeed = Range.clip(currentLatchSpeed, 0.5 - MAX_LATCH_SPEED, 0.5 + MAX_LATCH_SPEED);
-        LatchServo.setPosition(currentLatchSpeed);
+        //currentLatchSpeed = Range.clip(currentLatchSpeed, 0.5 - MAX_LATCH_SPEED, 0.5 + MAX_LATCH_SPEED);
+        //LatchServo.setPosition(currentLatchSpeed);
         //leftIntakePwr = Range.clip(leftIntakePwr, -MAX_INTAKE_PWR, MAX_INTAKE_PWR);
         //intakeLeft.setPower(leftIntakePwr);
         //rightIntakePwr = Range.clip(rightIntakePwr, -MAX_INTAKE_PWR,MAX_INTAKE_PWR);
@@ -179,12 +204,13 @@ public class DeathBoxOp extends OpMode {
         //Show Data for Drive Train
         telemetry.addData("Left Drive Pwr", FL.getPower());
         telemetry.addData("Right Drive Pwr", BR.getPower());
-        telemetry.addData("Latch Pwr", LA.getPower());
-        telemetry.addData("Latch Servo", LatchServo.getPosition());
+        //telemetry.addData("Latch Pwr", LA.getPower());
+        //telemetry.addData("Latch Servo", LatchServo.getPosition());
         telemetry.addData("Marker Pos", Marker.getPosition());
         //telemetry.addData("Left Intake Pwr", intakeLeft.getPower());
         //telemetry.addData("Right Intake Pwr", intakeRight.getPower());
-
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("IMU Heading", String.format("%.0f", angles.firstAngle));
     }
 
     //Create Methods that will update the driver data
@@ -205,18 +231,160 @@ public class DeathBoxOp extends OpMode {
     double setTime; //used to measure the time period of each step in autonomous
     int state = 0; //used to control the steps taken during autonomous
     String stateName = ""; //Overwrite this as the specific step used in Autonomous
+    boolean disableEncoderCalibration = false;
+    boolean encoderTargetReached = false;
+    boolean angleTargetReached = false;
+    EncoderMode encoderMode = EncoderMode.CONSTANT_SPEED;
+
 
     void resetEncoders() {
-
+        if (disableEncoderCalibration) {
+            FR.setPower(0);
+            FL.setPower(0);
+            BR.setPower(0);
+            BL.setPower(0);
+        }
+        else {
+            FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
-    void runEncoders() {
-
+    void runConstantSpeed() {
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    void runWithoutEncoders() {
-
+    void runConstantPower() {
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    void resetSensors() {
 
+    void move(double pwr_fr, double pwr_fl, double pwr_br, double pwr_bl) {
+        FR.setPower(pwr_fr);
+        FL.setPower(pwr_fl);
+        BR.setPower(pwr_br);
+        BL.setPower(pwr_bl);
+    }
+    void stopDriveMotors() {
+        move(0, 0, 0, 0);
+    }
+
+    void moveForward(double power) {
+        switch (encoderMode) {
+            case CONSTANT_SPEED: runConstantSpeed();
+                break;
+            case CONSTANT_POWER: runConstantPower();
+                break;
+        }
+        move(power, power, power, power);
+    }
+
+    void moveForward(double speed, double revolutions) {
+        //Proportional Drive Control: for the last half rotation of the motor,
+        //the motors will decelerate to from the input speed to 10% speed
+        double target = revolutions * COUNTS_PER_REVOLUTION * DRIVE_GEAR_RATIO;
+        double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION;
+        double error = target - FR.getCurrentPosition();
+        if (!encoderTargetReached) {
+            if (Math.abs(error) <= COUNTS_PER_REVOLUTION / 2) {
+                speed = (0.10 * error / Math.abs(error)) + (error * kp);
+            }
+            moveForward(speed);
+        }
+        if (Math.abs(error) <= 4) {
+            stopDriveMotors();
+            encoderTargetReached = true;
+        }
+        else {//Wait until target position is reached
+            telemetry.addData("Rotations left", String.format("%.2f", error / COUNTS_PER_REVOLUTION / DRIVE_GEAR_RATIO));
+        }
+    }
+
+    void turnClockwise(double power) {
+        runConstantSpeed();
+        move(-power, power, -power, power);
+    }
+    void turnClockwise(int targetAngle) {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("Heading", String.format("%.0f", angles.firstAngle));
+        double k = 0.005; //experimentally found
+        double e = targetAngle + angles.firstAngle; //clockwise is negative for thirdAngle
+        double power = (0.05 * e / Math.abs(e)) + k * e;
+        power = Range.clip(power, -1.0, 1.0);
+        if (Math.abs(e) >= 2)
+            turnClockwise(power);
+        else {
+            stopDriveMotors();
+            angleTargetReached = true;
+        }
+    }
+
+    void turnClockwisePID(int targetAngle) {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("Heading", String.format("%.0f", angles.firstAngle));
+        if (true) {
+            double kp = 0.010; //proportionality constant (amount to adjust for immediate deviance) experimentally found
+            double ki = 0.001; //integral constant (amount to adjust for past errors) experimentally found
+            double kd = 0.0022; //derivative constant (amount to adjust for future errors) experimentally found
+            double e = targetAngle + angles.firstAngle; //error
+            e_list.add(e);
+            t_list.add(this.time);
+            double power = kp*e + ki*integrate() + kd*differentiate();
+            power = Range.clip(power, -DRIVE_PWR_MAX, DRIVE_PWR_MAX); //ensure power doesn't exceed max speed
+            if (Math.abs(e) >= 5) //5 degree angle slack / uncertainty
+                turnClockwise(power);
+            else {
+                stopDriveMotors();
+                e_list.clear();
+                t_list.clear();
+                angleTargetReached = true;
+            }
+        }
+        else {
+            double k = 3.5; //experimentally found
+            double power = k * (targetAngle + angles.firstAngle)
+                    / Math.abs(targetAngle);
+            if (Math.abs(targetAngle + angles.firstAngle) >= 10)
+                turnClockwise(power);
+            else {
+                stopDriveMotors();
+                angleTargetReached = true;
+            }
+        }
+    }
+    ArrayList<Double> e_list = new ArrayList<>(); //records past errors
+    ArrayList<Double> t_list = new ArrayList<>(); // records times past errors took place
+    //integrates error of angle w/ respect to time
+    double integrate() {
+        double sum = 0; //uses trapezoidal sum approximation method
+        if (e_list.size() >= 2) {
+            for (int i = 0; i <= e_list.size() - 2; i++) {
+                double dt = t_list.get(i+1) - t_list.get(i);
+                sum += (e_list.get(i+1) + e_list.get(i))*dt / 2.0;
+            }
+        }
+        return sum;
+    }
+    //differentiates error of angle w/ respect to time
+    double differentiate() {
+        double slope = 0; //uses secant line approximation
+        if (e_list.size() >= 2) {
+            double de = e_list.get(e_list.size() - 1) - e_list.get(e_list.size() - 2);
+            double dt = t_list.get(t_list.size() - 1) - t_list.get(t_list.size() - 2);
+            slope = de/dt;
+        }
+        return slope;
+    }
+
+
+    void calibrateAutoVariables() {
+        encoderTargetReached = false;
+        angleTargetReached = false;
     }
     //used to measure the amount of time passed since a new step in autonomous has started
     boolean waitSec(double elapsedTime) { return (this.time - setTime >= elapsedTime); }
