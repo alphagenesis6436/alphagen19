@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "LatchTileOp", group = "Default")
-//@Disabled
+@Disabled
 public class LatchTileOp extends OpMode {
     //Declare any motors
     DcMotor FL; //left if forward

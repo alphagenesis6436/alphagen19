@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,38 +15,44 @@ import com.qualcomm.robotcore.util.Range;
 //@Disabled
 public class DeathBoxOp extends OpMode {
     //Declare any motors, servos, or sensors
-    DcMotor FL; //left if forward
+    DcMotor FL;
     DcMotor FR;
     DcMotor BL;
     DcMotor BR;
     DcMotor LA;
     DcMotor intakeLeft;
     DcMotor intakeRight;
-    Servo PulleyServo;
+    Servo LatchServo;
     Servo Marker;
-    //Declare any variables & constants pertaining to robot mechanism (i.e drive train)
+
+    //Declare any variables & constants pertaining to Drive Train
     final double DRIVE_PWR_MAX = 0.80;
     double currentLeftPwr = 0.0;
     double currentRightPwr = 0.0;
+    DriveMode driveMode = DriveMode.TANKDRIVE;
+
+    //Declare any variables & constants pertaining to Intake System
+    final double MAX_INTAKE_PWR = 0.8;
+    double leftIntakePwr = 0.0;
+    double rightIntakePwr = 0.0;
+
+    //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.80;
     double currentLatchPwr = 0.0;
-    final double MAX_INTAKE_PWR = 0.8;
-    double leftPwr = 0.0;
-    double rightPwr = 0.0;
-    double currentPulleySpeed = 0.5;
+    final double MAX_LATCH_SPEED = (1.00) / 2;
+    double currentLatchSpeed = 0.5;
+
+    //Declare any variables & constants pertaining to Marker
     final double START_MARK_POS = 0.0;
     double currentMarkPos = START_MARK_POS;
     final double MIN_MARKER_POS = 0;
     final double MAX_MARKER_POS = 0.75;
-    final double MAX_PULLEY_SPEED = (1.00) / 2;
-    DriveMode driveMode = DriveMode.TANKDRIVE;
+
 
     public DeathBoxOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
-
-
         FL = hardwareMap.dcMotor.get("fl");
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
         BL = hardwareMap.dcMotor.get("bl");
@@ -58,12 +63,12 @@ public class DeathBoxOp extends OpMode {
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
         LA = hardwareMap.dcMotor.get("la");
         LA.setDirection(DcMotorSimple.Direction.FORWARD);
-        intakeLeft = hardwareMap.dcMotor.get("il");
-        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeRight = hardwareMap.dcMotor.get("ir");
-        intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        //intakeLeft = hardwareMap.dcMotor.get("il");
+        //intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //intakeRight = hardwareMap.dcMotor.get("ir");
+        //intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
         //Initialize Servos
-        PulleyServo = hardwareMap.servo.get("ps");
+        LatchServo = hardwareMap.servo.get("ls");
         Marker = hardwareMap.servo.get("mk");
 
         telemetry();
@@ -84,7 +89,7 @@ public class DeathBoxOp extends OpMode {
         //Add in update methods for specific robot mechanisms
         updateDriveTrain();
         updateLatch();
-        updateDrawBridgeIntake();
+        //updateDrawBridgeIntake();
         updateMarker();
 
     }
@@ -123,26 +128,20 @@ public class DeathBoxOp extends OpMode {
     //Controlled by Driver 2
     //step 1: Press DPAD up or down to move latch up or down.
     void updateLatch() {
-        currentLatchPwr = 0.0;
-        if(gamepad2.dpad_up) {
-            currentLatchPwr = LATCH_PWR;
+        currentLatchPwr = -gamepad2.right_stick_y * LATCH_PWR;
+        currentLatchSpeed = 0.5;
+        if(gamepad2.dpad_right) {
+            currentLatchSpeed = MAX_LATCH_SPEED;
         }
-        else if (gamepad2.dpad_down) {
-            currentLatchPwr = -LATCH_PWR;
+        else if (gamepad2.dpad_left) {
+            currentLatchSpeed = -MAX_LATCH_SPEED;
         }
     }
     //Controlled by Driver 2
     //step 1: Push Left Stick up or down to move intake.
     void updateDrawBridgeIntake() {
-        leftPwr = -gamepad2.left_stick_y*MAX_INTAKE_PWR;
-        rightPwr = -gamepad2.left_stick_y*MAX_INTAKE_PWR;
-        currentPulleySpeed = 0.5;
-        if(gamepad2.dpad_right) {
-            currentPulleySpeed = MAX_PULLEY_SPEED;
-        }
-        else if (gamepad2.dpad_left) {
-            currentPulleySpeed = -MAX_PULLEY_SPEED;
-        }
+        leftIntakePwr = -gamepad2.left_stick_y*MAX_INTAKE_PWR;
+        rightIntakePwr = -gamepad2.left_stick_y*MAX_INTAKE_PWR;
     }
     //Controlled by Driver 2
     //Press A to move marker arm up, Press Y to move marker arm down
@@ -166,10 +165,14 @@ public class DeathBoxOp extends OpMode {
         BR.setPower(currentRightPwr);
         currentLatchPwr = Range.clip(currentLatchPwr, -LATCH_PWR, LATCH_PWR);
         LA.setPower(currentLatchPwr);
-        leftPwr = Range.clip(leftPwr, -MAX_INTAKE_PWR, MAX_INTAKE_PWR);
-        intakeLeft.setPower(leftPwr);
-        rightPwr = Range.clip(rightPwr, -MAX_INTAKE_PWR,MAX_INTAKE_PWR);
-        intakeRight.setPower(rightPwr);
+        currentMarkPos = Range.clip(currentMarkPos, MIN_MARKER_POS, MAX_MARKER_POS);
+        Marker.setPosition(currentMarkPos);
+        currentLatchSpeed = Range.clip(currentLatchSpeed, 0.5 - MAX_LATCH_SPEED, 0.5 + MAX_LATCH_SPEED);
+        LatchServo.setPosition(currentLatchSpeed);
+        //leftIntakePwr = Range.clip(leftIntakePwr, -MAX_INTAKE_PWR, MAX_INTAKE_PWR);
+        //intakeLeft.setPower(leftIntakePwr);
+        //rightIntakePwr = Range.clip(rightIntakePwr, -MAX_INTAKE_PWR,MAX_INTAKE_PWR);
+        //intakeRight.setPower(rightIntakePwr);
 
     }
     void telemetry() {
@@ -177,8 +180,10 @@ public class DeathBoxOp extends OpMode {
         telemetry.addData("Left Drive Pwr", FL.getPower());
         telemetry.addData("Right Drive Pwr", BR.getPower());
         telemetry.addData("Latch Pwr", LA.getPower());
-        telemetry.addData("Left Intake Pwr", intakeLeft.getPower());
-        telemetry.addData("Right Intake Pwr", intakeRight.getPower());
+        telemetry.addData("Latch Servo", LatchServo.getPosition());
+        telemetry.addData("Marker Pos", Marker.getPosition());
+        //telemetry.addData("Left Intake Pwr", intakeLeft.getPower());
+        //telemetry.addData("Right Intake Pwr", intakeRight.getPower());
 
     }
 

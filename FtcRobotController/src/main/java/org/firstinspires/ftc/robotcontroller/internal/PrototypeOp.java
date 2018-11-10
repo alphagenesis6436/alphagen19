@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "PrototypeOp", group = "Default")
-//@Disabled
+@Disabled
 public class PrototypeOp extends OpMode {
     //Declare any motors, servos, and sensors
 
