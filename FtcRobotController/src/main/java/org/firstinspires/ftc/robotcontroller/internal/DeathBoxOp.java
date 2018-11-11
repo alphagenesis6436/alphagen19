@@ -79,14 +79,14 @@ public class DeathBoxOp extends OpMode {
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
         BR = hardwareMap.dcMotor.get("br");
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
-        //LA = hardwareMap.dcMotor.get("la");
-        //LA.setDirection(DcMotorSimple.Direction.FORWARD);
+        LA = hardwareMap.dcMotor.get("la");
+        LA.setDirection(DcMotorSimple.Direction.FORWARD);
         //intakeLeft = hardwareMap.dcMotor.get("il");
         //intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //intakeRight = hardwareMap.dcMotor.get("ir");
         //intakeRight.setDirection(DcMotorSimple.Direction.FORWARD);
         //Initialize Servos
-        //LatchServo = hardwareMap.servo.get("ls");
+        LatchServo = hardwareMap.servo.get("ls");
         Marker = hardwareMap.servo.get("mk");
         //Initialize Sensors
         BNO055IMU.Parameters parameterz = new BNO055IMU.Parameters();
@@ -96,6 +96,7 @@ public class DeathBoxOp extends OpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameterz);
 
+        telemetry.addData(">", "Press Start to continue");
         telemetry();
     }
     @Override public void loop() {
@@ -113,7 +114,7 @@ public class DeathBoxOp extends OpMode {
     void updateData() {
         //Add in update methods for specific robot mechanisms
         updateDriveTrain();
-        //updateLatch();
+        updateLatch();
         //updateDrawBridgeIntake();
         updateMarker();
 
@@ -156,10 +157,10 @@ public class DeathBoxOp extends OpMode {
         currentLatchPwr = -gamepad2.right_stick_y * LATCH_PWR;
         currentLatchSpeed = 0.5;
         if(gamepad2.dpad_right) {
-            currentLatchSpeed = MAX_LATCH_SPEED;
+            currentLatchSpeed = 0.5 + MAX_LATCH_SPEED;
         }
         else if (gamepad2.dpad_left) {
-            currentLatchSpeed = -MAX_LATCH_SPEED;
+            currentLatchSpeed = 0.5 - MAX_LATCH_SPEED;
         }
     }
     //Controlled by Driver 2
@@ -188,12 +189,12 @@ public class DeathBoxOp extends OpMode {
         currentRightPwr = Range.clip(currentRightPwr, -DRIVE_PWR_MAX, DRIVE_PWR_MAX);
         FR.setPower(currentRightPwr);
         BR.setPower(currentRightPwr);
-        //currentLatchPwr = Range.clip(currentLatchPwr, -LATCH_PWR, LATCH_PWR);
-        //LA.setPower(currentLatchPwr);
+        currentLatchPwr = Range.clip(currentLatchPwr, -LATCH_PWR, LATCH_PWR);
+        LA.setPower(currentLatchPwr);
         currentMarkPos = Range.clip(currentMarkPos, MIN_MARKER_POS, MAX_MARKER_POS);
         Marker.setPosition(currentMarkPos);
-        //currentLatchSpeed = Range.clip(currentLatchSpeed, 0.5 - MAX_LATCH_SPEED, 0.5 + MAX_LATCH_SPEED);
-        //LatchServo.setPosition(currentLatchSpeed);
+        currentLatchSpeed = Range.clip(currentLatchSpeed, 0.5 - MAX_LATCH_SPEED, 0.5 + MAX_LATCH_SPEED);
+        LatchServo.setPosition(currentLatchSpeed);
         //leftIntakePwr = Range.clip(leftIntakePwr, -MAX_INTAKE_PWR, MAX_INTAKE_PWR);
         //intakeLeft.setPower(leftIntakePwr);
         //rightIntakePwr = Range.clip(rightIntakePwr, -MAX_INTAKE_PWR,MAX_INTAKE_PWR);
@@ -204,8 +205,8 @@ public class DeathBoxOp extends OpMode {
         //Show Data for Drive Train
         telemetry.addData("Left Drive Pwr", FL.getPower());
         telemetry.addData("Right Drive Pwr", BR.getPower());
-        //telemetry.addData("Latch Pwr", LA.getPower());
-        //telemetry.addData("Latch Servo", LatchServo.getPosition());
+        telemetry.addData("Latch Pwr", LA.getPower());
+        telemetry.addData("Latch Servo", LatchServo.getPosition());
         telemetry.addData("Marker Pos", Marker.getPosition());
         //telemetry.addData("Left Intake Pwr", intakeLeft.getPower());
         //telemetry.addData("Right Intake Pwr", intakeRight.getPower());

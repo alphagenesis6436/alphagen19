@@ -58,6 +58,7 @@ public class OpModeTemplate extends OpMode {
 
         //Initialize sensors
 
+        telemetry.addData(">", "Press Start to continue");
         telemetry();
     }
     @Override public void loop() {
