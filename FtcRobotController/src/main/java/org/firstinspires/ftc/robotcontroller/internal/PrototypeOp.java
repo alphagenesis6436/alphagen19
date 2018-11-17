@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.Range;
 public class PrototypeOp extends OpMode {
     //Declare any motors, servos, and sensors
     DcMotor armMotor;
+    DcMotor bodyMotor;
     Servo clawArm; //180
 
     //Declare any variables & constants pertaining to specific robot mechanisms (i.e. drive train)
@@ -25,6 +26,8 @@ public class PrototypeOp extends OpMode {
     final double CLAW_MAX = 1.0;
     final double CLAW_MIN = 0.0;
     final double DRIVE_PWR_MAX = 0.7;
+    final double BODY_PWR_MAX = 0.8;
+    double currentBodyPwr = 0.0;
     double currentArmPwr = 0.0;
 
 
@@ -36,6 +39,8 @@ public class PrototypeOp extends OpMode {
         //Initialize motors & set direction
         armMotor = hardwareMap.dcMotor.get("arm");
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        bodyMotor = hardwareMap.dcMotor.get("body");
+        bodyMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         //Initialize servos
         clawArm = hardwareMap.servo.get("ca");
         //Initialize sensors
@@ -58,7 +63,7 @@ public class PrototypeOp extends OpMode {
         //Add in update methods for specific robot mechanisms
         updateClaw();
         updateArm();
-
+        updateBody();
 
     }
 
@@ -68,12 +73,15 @@ public class PrototypeOp extends OpMode {
         clawArm.setPosition(clawArmPosition);
         currentArmPwr = Range.clip(currentArmPwr,-DRIVE_PWR_MAX,DRIVE_PWR_MAX);
         armMotor.setPower(currentArmPwr);
+        currentBodyPwr = Range.clip(currentBodyPwr,-BODY_PWR_MAX,BODY_PWR_MAX );
+        bodyMotor.setPower(currentBodyPwr);
     }
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
 
         telemetry.addData("Claw Pos",clawArm.getPosition());
         telemetry.addData("ARM Pwr",armMotor.getPower());
+        telemetry.addData("Body Pwr",armMotor.getPower());
 
     }
 
@@ -87,11 +95,15 @@ public class PrototypeOp extends OpMode {
             //Step ...: (Physical Instructions on how to control specific robot mechanism using controller buttons)
      */
     void updateClaw(){
-        clawArmPosition = -gamepad2.left_stick_y * MAX_CLAW_SPEED + CLAW_ARM_START_POS;
+        clawArmPosition = -gamepad1.left_stick_y * MAX_CLAW_SPEED + CLAW_ARM_START_POS;
     }
     void updateArm(){
         currentArmPwr = -gamepad2.right_stick_y * DRIVE_PWR_MAX;
     }
+    void updateBody(){
+        currentBodyPwr = -gamepad2.left_stick_y * DRIVE_PWR_MAX;
+    }
+
 
     //Create variables/methods that will be used in ALL autonomous programs for this specific robot
 
