@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "SwingOp", group = "Default")
-//@Disabled
+@Disabled
 public class SwingOp extends OpMode {
     //Declare any motors, servos, and sensors
     DcMotor swingMotor;

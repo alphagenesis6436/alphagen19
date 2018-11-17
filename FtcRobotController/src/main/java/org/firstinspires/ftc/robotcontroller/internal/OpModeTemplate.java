@@ -58,6 +58,7 @@ public class OpModeTemplate extends OpMode {
 
         //Initialize sensors
 
+        telemetry.addData(">", "Press Start to continue");
         telemetry();
     }
     @Override public void loop() {
@@ -112,11 +113,15 @@ public class OpModeTemplate extends OpMode {
     void runConstantPower() {
 
     }
-    void resetSensors() {
+    void calibrateAutoVariables() {
 
     }
     //used to measure the amount of time passed since a new step in autonomous has started
     boolean waitSec(double elapsedTime) { return (this.time - setTime >= elapsedTime); }
 
+}
+
+enum EncoderMode {
+    CONSTANT_SPEED, CONSTANT_POWER;
 }
 

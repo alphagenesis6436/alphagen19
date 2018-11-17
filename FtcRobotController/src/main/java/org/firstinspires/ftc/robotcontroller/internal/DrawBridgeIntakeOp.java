@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "DrawBridgeIntakeOp", group = "Default")
-//@Disabled
+@Disabled
 public class DrawBridgeIntakeOp extends OpMode {
     //Declare any motors, servos, and sensors
     //Rev Motors used

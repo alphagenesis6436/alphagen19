@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  */
 @Autonomous(name = "AutoTemplate", group = "default")
 @Disabled
-public class AutoTemplate extends RangerOp {
+public class AutoTemplate extends OpModeTemplate {
     //Declare and Initialize any variables needed for this specific autonomous program
 
 
@@ -25,7 +25,7 @@ public class AutoTemplate extends RangerOp {
         switch(state){
             case 0: //Use this state to reset all hardware devices
                 stateName = "Initial Calibration";
-                resetSensors();
+                calibrateAutoVariables();
                 resetEncoders();
                 state++;
                 break;
@@ -43,13 +43,13 @@ public class AutoTemplate extends RangerOp {
             case 1000: //Run When Autonomous is Complete
                 stateName = "Autonomous Complete";
                 //Set all motors to zero and servos to initial positions
-                resetSensors();
+                calibrateAutoVariables();
                 resetEncoders();
                 break;
 
             default://Default state used to reset all hardware devices to ensure no errors
                 stateName = "Calibrating";
-                resetSensors();
+                calibrateAutoVariables();
                 resetEncoders();
                 if (waitSec(1)) {
                     state++;
