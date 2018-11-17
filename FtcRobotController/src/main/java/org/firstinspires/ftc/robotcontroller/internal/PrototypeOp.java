@@ -11,26 +11,31 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "PrototypeOp", group = "Default")
-//@Disabled
+@Disabled
 public class PrototypeOp extends OpMode {
     //Declare any motors, servos, and sensors
-
+    DcMotor armMotor;
     Servo clawArm; //180
 
     //Declare any variables & constants pertaining to specific robot mechanisms (i.e. drive train)
 
     final double CLAW_ARM_START_POS = 0.5;
+    final double MAX_CLAW_SPEED = (1.00) * 0.5;
     double clawArmPosition = CLAW_ARM_START_POS;
-    double clawDelta = 0.001;
     final double CLAW_MAX = 1.0;
     final double CLAW_MIN = 0.0;
+    final double DRIVE_PWR_MAX = 0.7;
+    double currentArmPwr = 0.0;
+
+
 
 
     public PrototypeOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
-
+        armMotor = hardwareMap.dcMotor.get("arm");
+        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         //Initialize servos
         clawArm = hardwareMap.servo.get("ca");
         //Initialize sensors
@@ -52,19 +57,23 @@ public class PrototypeOp extends OpMode {
     void updateData() {
         //Add in update methods for specific robot mechanisms
         updateClaw();
-        updateDriveTrain();
+        updateArm();
+
+
     }
 
     void initialization() {
         //Clip and Initialize Specific Robot Mechanisms
-
         clawArmPosition = Range.clip(clawArmPosition,CLAW_MIN,CLAW_MAX);
         clawArm.setPosition(clawArmPosition);
+        currentArmPwr = Range.clip(currentArmPwr,-DRIVE_PWR_MAX,DRIVE_PWR_MAX);
+        armMotor.setPower(currentArmPwr);
     }
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
 
         telemetry.addData("Claw Pos",clawArm.getPosition());
+        telemetry.addData("ARM Pwr",armMotor.getPower());
 
     }
 
@@ -78,12 +87,10 @@ public class PrototypeOp extends OpMode {
             //Step ...: (Physical Instructions on how to control specific robot mechanism using controller buttons)
      */
     void updateClaw(){
-        if (gamepad1.dpad_up) {
-            clawArmPosition += clawDelta;
-        }
-        else if(gamepad1.dpad_down){
-            clawArmPosition -= clawDelta;
-        }
+        clawArmPosition = -gamepad2.left_stick_y * MAX_CLAW_SPEED + CLAW_ARM_START_POS;
+    }
+    void updateArm(){
+        currentArmPwr = -gamepad2.right_stick_y * DRIVE_PWR_MAX;
     }
 
     //Create variables/methods that will be used in ALL autonomous programs for this specific robot
