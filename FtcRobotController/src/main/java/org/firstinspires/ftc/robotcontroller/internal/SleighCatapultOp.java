@@ -6,37 +6,10 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
 /**
- * Created by Alex on 6/1/2017.
- * Updated by Alex on 9/30/2018
+ * Created by Alex on 11/18/2018.
+ * This program is for the Sleigh Intake Prototype and
+ * the Swing Catapult Prototype.
  */
-
-/**
- * Notes about Hardware Devices
- *  DCMotors
- *      Power Range: [-1. 1]
- *      AndyMark Neverest Motors
- *          FORWARD direction follows the RIGHT HAND RULE
- *             meaning, stick out your right thumb (motor axle) and curl hand in direction of fingers
- *             (direction motor axle will spin)
- *      Tetrix Motors
- *          FORWARD direction follows the LEFT HAND RULE
- *      Rev Motors
- *          FORWARD direction is indicated on the motor!
- *  Servos
- *      Position Range: [0, 1]
- *      180 Degree HiTechnic Servos
- *          0 is fully clockwise
- *          1 is fully clockwise
- *          Most Servos we have are broken and cannot operate in the full range
- *      360 Degree (Continuous) HiTechnic Servos
- *          0 is max speed in clockwise direction
- *          0.5 is speed = 0, servo stops
- *          1 is max speed in counterclockwise direction
- *      Rev Servos
- *
- *
- */
-
 
 @TeleOp(name = "SleighCatapultOp", group = "Default")
 //@Disabled
@@ -70,8 +43,6 @@ public class SleighCatapultOp extends OpMode {
 
         //Initialize servos
         tiltServo = hardwareMap.servo.get("ts");
-
-        //Initialize sensors
 
         telemetry.addData(">", "Press Start to continue");
     }
@@ -139,12 +110,14 @@ public class SleighCatapultOp extends OpMode {
     }
 
     void initialization() {
-        //Clip and Initialize Specific Robot Mechanisms
+        //Clip and Initialize Sleigh Intake Motor and Servo
         currentSleighPwr = Range.clip(currentSleighPwr, -SLEIGH_PWR_MAX, SLEIGH_PWR_MAX);
         sleighMotor.setPower(currentSleighPwr);
+        currentTiltPos = Range.clip(currentTiltPos, TILT_MIN, TILT_MAX);
+        tiltServo.setPosition(currentTiltPos);
+        //Clip and Initialize Swing Catapult Motor
         currentCatapultPwr = Range.clip(currentCatapultPwr, -CATAPULT_PWR_MAX, CATAPULT_PWR_MAX);
         catapultMotor.setPower(currentCatapultPwr);
-        currentTiltPos = Range.clip(currentTiltPos, TILT_MIN, TILT_MAX);
     }
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
