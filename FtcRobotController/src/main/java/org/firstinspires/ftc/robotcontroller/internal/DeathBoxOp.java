@@ -97,7 +97,6 @@ public class DeathBoxOp extends OpMode {
         imu.initialize(parameterz);
 
         telemetry.addData(">", "Press Start to continue");
-        telemetry();
     }
     @Override public void loop() {
         //Update all the data based on driver input

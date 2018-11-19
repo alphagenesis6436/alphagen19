@@ -73,11 +73,6 @@ public class OpModeTemplate extends OpMode {
         telemetry();
     }
 
-    void updateData() {
-        //Add in update methods for specific robot mechanisms
-
-    }
-
     void initialization() {
         //Clip and Initialize Specific Robot Mechanisms
 
@@ -87,15 +82,20 @@ public class OpModeTemplate extends OpMode {
 
     }
 
+    void updateData() {
+        //Add in update methods for specific robot mechanisms
+
+    }
+
     //Create Methods that will update the driver data
 
- /*
+    /*
      All update methods should be commented with:
          //Controlled by Driver (1 or 2)
          //Step 1: (Physical Instructions on how to control specific robot mechanism using controller buttons)
          //Step 2: (Physical Instructions on how to control specific robot mechanism using controller buttons)
          //Step ...: (Physical Instructions on how to control specific robot mechanism using controller buttons)
-  */
+    */
 
 
     //Create variables/methods that will be used in ALL autonomous programs for this specific robot
