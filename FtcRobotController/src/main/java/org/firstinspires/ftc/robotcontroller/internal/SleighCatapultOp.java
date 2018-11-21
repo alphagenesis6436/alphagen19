@@ -117,17 +117,13 @@ public class SleighCatapultOp extends OpMode {
             case 2: //stop catapult motor for 1/2 a second
                 if (waitSec(0.5)) {
                     catapultState++;
-                    catapultMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     setTime = this.time;
                 }
                 break;
             case 3: //bring catapult back to original position
-                catapultMotor.setTargetPosition((int)(-COUNTS_PER_REV20 * 0.25));
-                catapultMotor.setPower(CATAPULT_PWR_MAX);
-                //currentCatapultPwr = -CATAPULT_PWR_MAX;
-                //currentCatapultPos = catapultMotor.getCurrentPosition();
-                //if (currentCatapultPos <= COUNTS_PER_REV20 * 0.05) {
-                if (!catapultMotor.isBusy()) {
+                currentCatapultPwr = -0.4;
+                if (waitSec(1)) {
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     catapultState = 0;
@@ -151,14 +147,13 @@ public class SleighCatapultOp extends OpMode {
             case -2: //stop catapult motor for 1/2 a second
                 if (waitSec(0.5)) {
                     catapultState--;
-                    catapultMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     setTime = this.time;
                 }
                 break;
             case -3: //bring catapult back to original position
-                catapultMotor.setTargetPosition((int)(-COUNTS_PER_REV20 * 0.3));
-                catapultMotor.setPower(CATAPULT_PWR_MAX);
-                if (!catapultMotor.isBusy()) {
+                currentCatapultPwr = -0.4;
+                if (waitSec(1)) {
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     catapultState = 0;
