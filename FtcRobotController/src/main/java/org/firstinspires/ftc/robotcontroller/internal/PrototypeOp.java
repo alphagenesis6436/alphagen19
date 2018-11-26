@@ -80,7 +80,7 @@ public class PrototypeOp extends OpMode {
         //Show Data for Specific Robot Mechanisms
 
         telemetry.addData("Claw Pos",clawArm.getPosition());
-        telemetry.addData("ARM Pwr",armMotor.getPower());
+        telemetry.addData("Arm Pwr",armMotor.getPower());
         telemetry.addData("Body Pwr",armMotor.getPower());
 
     }
@@ -98,10 +98,10 @@ public class PrototypeOp extends OpMode {
         clawArmPosition = -gamepad1.left_stick_y * MAX_CLAW_SPEED + CLAW_ARM_START_POS;
     }
     void updateArm(){
-        currentArmPwr = -gamepad2.right_stick_y * DRIVE_PWR_MAX;
+        currentArmPwr = -gamepad2.left_stick_y * DRIVE_PWR_MAX;
     }
     void updateBody(){
-        currentBodyPwr = -gamepad2.left_stick_y * DRIVE_PWR_MAX;
+        currentBodyPwr = -gamepad2.right_stick_y * DRIVE_PWR_MAX;
     }
 
 
