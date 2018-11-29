@@ -26,7 +26,8 @@ public class SleighCatapultOp extends OpMode {
     final double COUNTS_PER_REV20 = 537.6;
     final double SLEIGH_PWR_MAX = 0.8;
     double currentSleighPwr = 0.0;
-    final double CATAPULT_PWR_MAX = 0.85;
+    final double CATAPULT_GOLD_PWR_MAX = 0.80;
+    final double CATAPULT_SILVER_PWR_MAX = 0.70;
     double currentCatapultPwr = 0.0;
     boolean catapultIsOn = false;
     final double DRAWERSLIDE_PWR_MAX = 0.4;
@@ -88,12 +89,12 @@ public class SleighCatapultOp extends OpMode {
             case 0: //wait for launch button to be pressed
                 currentCatapultPwr = 0;
                 catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                if (gamepad2.b && !gamepad2.start && currentTiltPos == TILT_MIN) { // b button launches two balls
+                if (gamepad2.b && !gamepad2.start && currentTiltPos == TILT_MIN) { // b button launches two cubes
                     catapultState++;
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     setTime = this.time;
                 }
-                else if (gamepad2.x && currentTiltPos == TILT_MIN) { // x button launches two cubes
+                else if (gamepad2.x && currentTiltPos == TILT_MIN) { // x button launches two balls
                     catapultState--;
                     catapultMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     setTime = this.time;
@@ -103,11 +104,11 @@ public class SleighCatapultOp extends OpMode {
                 }
                 break;
 
-            //process to launch BALLS
+            //process to launch Cube
             case 1: //launch catapult by rotating motor forward
-                currentCatapultPwr = CATAPULT_PWR_MAX;
+                currentCatapultPwr = CATAPULT_GOLD_PWR_MAX;
                 currentCatapultPos = catapultMotor.getCurrentPosition();
-                if (currentCatapultPos >= COUNTS_PER_REV20 * 0.15) {
+                if (currentCatapultPos >= COUNTS_PER_REV20 * 0.2) {
                     catapultMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultState++;
@@ -123,7 +124,7 @@ public class SleighCatapultOp extends OpMode {
                 break;
             case 3: //bring catapult back to original position
                 currentCatapultPwr = -0.4;
-                if (waitSec(1)) {
+                if (waitSec(0.7)) {
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     catapultState = 0;
@@ -136,7 +137,7 @@ public class SleighCatapultOp extends OpMode {
             //process to launch balls
             case -1: //launch catapult by rotating motor forward
                 catapultMotor.setTargetPosition((int)(COUNTS_PER_REV20 * 0.5));
-                catapultMotor.setPower(CATAPULT_PWR_MAX);
+                catapultMotor.setPower(CATAPULT_SILVER_PWR_MAX);
                 if (!catapultMotor.isBusy()) {
                     catapultMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -153,7 +154,7 @@ public class SleighCatapultOp extends OpMode {
                 break;
             case -3: //bring catapult back to original position
                 currentCatapultPwr = -0.4;
-                if (waitSec(1)) {
+                if (waitSec(0.75)) {
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     catapultState = 0;
@@ -195,7 +196,7 @@ public class SleighCatapultOp extends OpMode {
         tiltServo1.setPosition(currentTiltPos);
         tiltServo2.setPosition(currentTiltPos);
         //Clip and Initialize Swing Catapult Motor
-        currentCatapultPwr = Range.clip(currentCatapultPwr, -CATAPULT_PWR_MAX, CATAPULT_PWR_MAX);
+        currentCatapultPwr = Range.clip(currentCatapultPwr, -CATAPULT_GOLD_PWR_MAX, CATAPULT_GOLD_PWR_MAX);
         if (catapultMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
             catapultMotor.setPower(currentCatapultPwr);
         }
