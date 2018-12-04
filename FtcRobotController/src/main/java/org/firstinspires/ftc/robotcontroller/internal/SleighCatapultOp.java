@@ -27,7 +27,7 @@ public class SleighCatapultOp extends OpMode {
     final double SLEIGH_PWR_MAX = 0.8;
     double currentSleighPwr = 0.0;
     final double CATAPULT_GOLD_PWR_MAX = 0.80;
-    final double CATAPULT_SILVER_PWR_MAX = 0.70;
+    final double CATAPULT_SILVER_PWR_MAX = 0.85;
     double currentCatapultPwr = 0.0;
     boolean catapultIsOn = false;
     final double DRAWERSLIDE_PWR_MAX = 0.4;
@@ -124,7 +124,7 @@ public class SleighCatapultOp extends OpMode {
                 break;
             case 3: //bring catapult back to original position
                 currentCatapultPwr = -0.4;
-                if (waitSec(0.7)) {
+                if (waitSec(0.6)) {
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     catapultState = 0;
@@ -136,7 +136,7 @@ public class SleighCatapultOp extends OpMode {
                 //process to launch CUBES
             //process to launch balls
             case -1: //launch catapult by rotating motor forward
-                catapultMotor.setTargetPosition((int)(COUNTS_PER_REV20 * 0.5));
+                catapultMotor.setTargetPosition((int)(COUNTS_PER_REV20 * 0.565));
                 catapultMotor.setPower(CATAPULT_SILVER_PWR_MAX);
                 if (!catapultMotor.isBusy()) {
                     catapultMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -154,7 +154,7 @@ public class SleighCatapultOp extends OpMode {
                 break;
             case -3: //bring catapult back to original position
                 currentCatapultPwr = -0.4;
-                if (waitSec(0.75)) {
+                if (waitSec(0.60)) {
                     catapultMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     catapultMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     catapultState = 0;
