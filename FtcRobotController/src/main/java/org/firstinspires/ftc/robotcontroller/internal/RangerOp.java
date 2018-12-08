@@ -1,10 +1,28 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import com.disnodeteam.dogecv.*;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 /**
  * Updated by Alex on 6/1/2017.
@@ -18,7 +36,7 @@ public class RangerOp extends OpMode {
     DcMotor rightDrive;
 
     //Declare any variables & constants pertaining to drive train
-    final double DRIVE_PWR_MAX = 0.40;
+    final double DRIVE_PWR_MAX = 0.80;
     double currentLeftPwr = 0.0;
     double currentRightPwr = 0.0;
 
@@ -87,20 +105,30 @@ public class RangerOp extends OpMode {
     int state = 0; //used to control the steps taken during autonomous
     String stateName = ""; //Overwrite this as the specific step used in Autonomous
 
+    boolean disableEncoderCalibration = false;
+    boolean encoderTargetReached = false;
+    boolean angleTargetReached = false;
+    EncoderMode encoderMode = EncoderMode.CONSTANT_SPEED;
+
+
     void resetEncoders() {
 
     }
-    void runEncoders() {
+    void runConstantSpeed() {
 
     }
-    void runWithoutEncoders() {
+    void runConstantPower() {
 
     }
-    void resetSensors() {
+
+
+    void calibrateAutoVariables() {
 
     }
     //used to measure the amount of time passed since a new step in autonomous has started
     boolean waitSec(double elapsedTime) { return (this.time - setTime >= elapsedTime); }
+
+
 
 }
 
