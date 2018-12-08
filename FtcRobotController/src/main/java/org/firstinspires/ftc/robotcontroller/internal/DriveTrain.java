@@ -430,7 +430,7 @@ public class DriveTrain {
                 break;
         }
     }
-    void moveForward(double speed, double revolutions) {
+    public void moveForward(double speed, double revolutions) {
         //Proportional Drive Control: for the last half rotation of the motor,
         //the motors will decelerate to from the input speed to 10% speed
         double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
@@ -470,7 +470,7 @@ public class DriveTrain {
                 break;
         }
     }
-    void moveRight(double speed, double revolutions) {
+    public void moveRight(double speed, double revolutions) {
         //Proportional Drive Control: for the last half rotation of the motor,
         //the motors will decelerate to from the input speed to 10% speed
         double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
@@ -517,7 +517,7 @@ public class DriveTrain {
                 break;
         }
     }
-    void moveForwardRight(double speed, double revolutions) {
+    public void moveForwardRight(double speed, double revolutions) {
         //Proportional Drive Control: for the last half rotation of the motor,
         //the motors will decelerate to from the input speed to 10% speed
         double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
@@ -563,7 +563,7 @@ public class DriveTrain {
                 break;
         }
     }
-    void moveForwardLeft(double speed, double revolutions) {
+    public void moveForwardLeft(double speed, double revolutions) {
         //Proportional Drive Control: for the last half rotation of the motor,
         //the motors will decelerate to from the input speed to 10% speed
         double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
@@ -590,7 +590,7 @@ public class DriveTrain {
         }
     }
 
-    void turnClockwise(double power) {
+    public void turnClockwise(double power) {
         runConstantSpeed();
         switch (driveMode) {
             case TANK:
@@ -603,7 +603,7 @@ public class DriveTrain {
                 break;
         }
     }
-    void turnClockwise(int targetAngle) {
+    public void turnClockwise(int targetAngle) {
         updateAngles();
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
         double k = 0.005; //experimentally found
@@ -618,7 +618,7 @@ public class DriveTrain {
         }
     }
 
-    void turnClockwisePID(int targetAngle) {
+    public void turnClockwisePID(int targetAngle) {
         updateAngles();
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
         anglePID.setTargetValue(targetAngle);
