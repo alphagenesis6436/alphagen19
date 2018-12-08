@@ -59,7 +59,6 @@ public class OpModeTemplate extends OpMode {
         //Initialize sensors
 
         telemetry.addData(">", "Press Start to continue");
-        telemetry();
     }
     @Override public void loop() {
         //Update all the data based on driver input
@@ -121,7 +120,5 @@ public class OpModeTemplate extends OpMode {
 
 }
 
-enum EncoderMode {
-    CONSTANT_SPEED, CONSTANT_POWER;
-}
+
 

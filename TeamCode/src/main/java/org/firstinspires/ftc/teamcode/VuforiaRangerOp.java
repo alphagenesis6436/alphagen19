@@ -6,7 +6,6 @@ import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,6 +19,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -98,6 +99,7 @@ public class VuforiaRangerOp extends OpMode {
     }
     @Override public void start() {
         runtime.reset(); //Reset timer
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
     }
     @Override public void loop() {
         //Update all the data based on driver input
@@ -117,10 +119,10 @@ public class VuforiaRangerOp extends OpMode {
     void updateData() {
         //Add in update methods for specific robot mechanisms
         updateDriveTrain();
-        updateIMU();
+        updateAngles();
     }
 
-    void updateIMU() {
+    void updateAngles() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
@@ -233,7 +235,7 @@ public class VuforiaRangerOp extends OpMode {
     }
 
     float getHeading() {
-        updateIMU();
+        updateAngles();
         telemetry.addData("Heading", -angles.firstAngle);
         return -angles.firstAngle;
     }

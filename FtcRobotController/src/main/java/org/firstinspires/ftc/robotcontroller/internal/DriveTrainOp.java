@@ -23,15 +23,12 @@ public class DriveTrainOp extends OpMode {
     final double DRIVE_PWR_MAX = 0.80;
     double currentLeftPwr = 0.0;
     double currentRightPwr = 0.0;
-    DriveMode driveMode = DriveMode.TANKDRIVE;
-    MineralColor mineralColor = MineralColor.NOTHING;
+    DriveMode driveMode = DriveMode.TANK;
 
     public DriveTrainOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
-
-
         FL = hardwareMap.dcMotor.get("fl");
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
         BL = hardwareMap.dcMotor.get("bl");
@@ -76,16 +73,6 @@ public class DriveTrainOp extends OpMode {
         telemetry.addData("Right Drive Pwr", BR.getPower());
     }
 
-    //Create Methods that will update the driver data
-
- /*
-     All update methods should be commented with:
-         //Controlled by Driver (1 or 2)
-         //Step 1: (Physical Instructions on how to control specific robot mechanism using controller buttons)
-         //Step 2: (Physical Instructions on how to control specific robot mechanism using controller buttons)
-         //Step ...: (Physical Instructions on how to control specific robot mechanism using controller buttons)
-  */
-
     //Controlled by Driver 1
     //step 1: Push up/down the left/right stick to control the left/right drive motors
     void updateTankDrive() {
@@ -104,16 +91,16 @@ public class DriveTrainOp extends OpMode {
     //step 1: Press left/right bumper to select tank/arcade drive
     void updateDriveTrain() {
         if (gamepad1.left_bumper){
-            driveMode = DriveMode.TANKDRIVE;
+            driveMode = DriveMode.TANK;
         }
         else if (gamepad1.right_bumper){
-            driveMode = DriveMode.ARCADEDRIVE;
+            driveMode = DriveMode.ARCADE;
         }
 
         switch (driveMode) {
-            case TANKDRIVE: updateTankDrive();
+            case TANK: updateTankDrive();
                 break;
-            case ARCADEDRIVE: updateArcadeDrive();
+            case ARCADE: updateArcadeDrive();
                 break;
         }
     }
@@ -142,10 +129,4 @@ public class DriveTrainOp extends OpMode {
 
 }
 
-//This enum allows us to switch between Drive Modes more elegantly than using boolean variables
-enum DriveMode {
-    TANKDRIVE, ARCADEDRIVE;
-}
-enum MineralColor {
-    YELLOW, WHITE, NOTHING;
-}
+

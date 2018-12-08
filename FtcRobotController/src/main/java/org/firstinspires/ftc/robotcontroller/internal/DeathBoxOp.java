@@ -44,7 +44,7 @@ public class DeathBoxOp extends OpMode {
     final double DRIVE_GEAR_RATIO = 1.0 / 1.0; //Driven / Driver
     double currentLeftPwr = 0.0;
     double currentRightPwr = 0.0;
-    DriveMode driveMode = DriveMode.TANKDRIVE;
+    DriveMode driveMode = DriveMode.TANK;
 
     //Declare any variables & constants pertaining to Intake System
     final double MAX_INTAKE_PWR = 0.8;
@@ -138,16 +138,16 @@ public class DeathBoxOp extends OpMode {
     //step 1: Press left/right bumper to select tank/arcade drive
     void updateDriveTrain() {
         if (gamepad1.left_bumper){
-            driveMode = DriveMode.TANKDRIVE;
+            driveMode = DriveMode.TANK;
         }
         else if (gamepad1.right_bumper){
-            driveMode = DriveMode.ARCADEDRIVE;
+            driveMode = DriveMode.ARCADE;
         }
 
         switch (driveMode) {
-            case TANKDRIVE: updateTankDrive();
+            case TANK: updateTankDrive();
                 break;
-            case ARCADEDRIVE: updateArcadeDrive();
+            case ARCADE: updateArcadeDrive();
                 break;
         }
     }
