@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
  */
 
 @TeleOp(name = "DeathBoxOp", group = "Default")
-//@Disabled
+@Disabled
 public class DeathBoxOp extends OpMode {
     //Declare any motors, servos, or sensors
     DcMotor FL;

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "ServoOp", group = "Default")
-//@Disabled
+@Disabled
 public class ServoOp extends OpMode {
     //Declare any motors, servos, and sensors
 

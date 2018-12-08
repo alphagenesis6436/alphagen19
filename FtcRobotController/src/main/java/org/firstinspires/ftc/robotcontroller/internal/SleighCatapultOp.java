@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
@@ -12,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "SleighCatapultOp", group = "Default")
-//@Disabled
+@Disabled
 public class SleighCatapultOp extends OpMode {
     //Declare any motors, servos, and sensors
     DcMotor sleighMotor; //40:1 AndyMark Neverest Motor

@@ -40,7 +40,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 @TeleOp(name = "VuforiaRangerOp", group = "Default")
-@Disabled
+//@Disabled
 public class VuforiaRangerOp extends OpMode {
     //Declare any motors
     DcMotor leftDrive;

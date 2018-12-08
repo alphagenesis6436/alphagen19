@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * Updated by Alex on 11/5/2017.
  */
 @Autonomous(name = "DeathBoxLatchAuto", group = "default")
-//@Disabled
+@Disabled
 public class DeathBoxLatchAuto extends DeathBoxOp {
     //Declare and Initialize any variables needed for this specific autonomous program
 
