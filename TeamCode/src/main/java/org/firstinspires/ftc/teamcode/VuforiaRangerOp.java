@@ -117,6 +117,11 @@ public class VuforiaRangerOp extends OpMode {
     void updateData() {
         //Add in update methods for specific robot mechanisms
         updateDriveTrain();
+        updateIMU();
+    }
+
+    void updateIMU() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
     void initialization() {
@@ -227,6 +232,11 @@ public class VuforiaRangerOp extends OpMode {
         }
     }
 
+    float getHeading() {
+        updateIMU();
+        telemetry.addData("Heading", -angles.firstAngle);
+        return -angles.firstAngle;
+    }
     void turnClockwise(double power) {
         runConstantSpeed();
         move(-power, power);
@@ -400,6 +410,15 @@ public class VuforiaRangerOp extends OpMode {
         vuforia.enableDogeCV(); //Enable the DogeCV-Vuforia combo
         vuforia.showDebug(); // Show debug info
         vuforia.start(); // Start the detector
+    }
+
+    boolean goldAligned() {
+        boolean isAligned = false;
+        int centerValue = 275;
+        int uncertainty = 25;
+        if (Math.abs(detector.getXPosition() - centerValue) <= uncertainty)
+            isAligned = true;
+        return isAligned;
     }
 
 }
