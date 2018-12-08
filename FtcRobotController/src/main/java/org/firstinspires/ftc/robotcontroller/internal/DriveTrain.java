@@ -369,34 +369,44 @@ public class DriveTrain {
         if (disableEncoderCalibration) {
             frontRight.setPower(0);
             frontLeft.setPower(0);
-            backRight.setPower(0);
-            backLeft.setPower(0);
+            if (numOfMotors == 4) {
+                backRight.setPower(0);
+                backLeft.setPower(0);
+            }
         }
         else {
             frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            if (numOfMotors == 4) {
+                backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
         }
     }
     private void runConstantSpeed() {
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (numOfMotors == 4) {
+            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
     }
     private void runConstantPower() {
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if (numOfMotors == 4) {
+            backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
 
     public void move(double pwr_fr, double pwr_fl, double pwr_br, double pwr_bl) {
         frontRight.setPower(pwr_fr);
         frontLeft.setPower(pwr_fl);
-        backRight.setPower(pwr_br);
-        backLeft.setPower(pwr_bl);
+        if (numOfMotors == 4) {
+            backRight.setPower(pwr_br);
+            backLeft.setPower(pwr_bl);
+        }
     }
     public void stopDriveMotors() {
         move(0, 0, 0, 0);
