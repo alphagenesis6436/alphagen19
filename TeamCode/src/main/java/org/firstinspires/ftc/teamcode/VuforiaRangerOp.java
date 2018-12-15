@@ -424,9 +424,6 @@ public class VuforiaRangerOp extends OpMode {
     }
 
 }
-enum EncoderMode {
-    CONSTANT_SPEED, CONSTANT_POWER;
-}
 
 
 
