@@ -5,7 +5,6 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -33,29 +32,34 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
- * Created by Alex on 12/12/2018.
+ * Created by Alex on 1/4/2018.
  */
 
 
-@TeleOp(name = "WoBuZhiDaoOp", group = "Default")
+@TeleOp(name = "SquirtleOp", group = "Default")
 //@Disabled
-public class WoBuZhiDaoOp extends OpMode {
+public class SquirtleOp extends OpMode {
     //Declare any motors, servos, and sensors
-    DriveTrain driveTrain = new DriveTrain(DriveMode.ARCADE, 4);
-    Servo markerServo; //180 servo
-    DcMotor latchMotor;
-    DcMotor armMotor;
-    DcMotor bodyMotor;
-    Servo clawArm; //180
-    DcMotor sleighMotor; //40:1 AndyMark Neverest Motor
+    DriveTrain driveTrain = new DriveTrain(DriveMode.TANK, 2);
+    DcMotor latchMotor; //40:1 AndyMark //encoder
+    DcMotor extenderMotor; // Rev Hex Core Motor //encoder
+    DcMotor scoringMotor; //40:1 AndyMark Neverest Motor //encoder
+    Servo intakeServo; //360 HiTechnic
     Servo tiltServo1; //180 Rev Servo, left side
     Servo tiltServo2; //180 Rev Servo, right side
 
-    //Declare any variables & constants pertaining to SleighIntake
-    final double SLEIGH_PWR_MAX = 0.8;
-    double currentSleighPwr = 0.0;
-    final double TILT_MIN = 0.0; //Sleigh is Down
-    final double TILT_MAX = 0.45; //Sleigh is Up
+    //Declare any variables & constants pertaining to Scoring
+    final double SCORING_PWR_MAX = 0.4;
+    double currentScoringPwr = 0.0;
+    int scoringState = 0;
+    final int COUNTS_PER_REV = 1120;
+
+
+    //Declare any variables & constants pertaining to Intake
+    final double INTAKE_SPD_MAX = (1.00) / 2;
+    double currentIntakeSpeed = 0.5;
+    final double TILT_MIN = 0.0; //Intake is Down
+    final double TILT_MAX = 0.45; //Intake is Up
     final double TILT_START_POS = TILT_MAX;
     double currentTiltPos = TILT_START_POS;
     boolean tiltDown = false;
@@ -63,28 +67,13 @@ public class WoBuZhiDaoOp extends OpMode {
     //Declare any variables & constants pertaining to Drive Train
     final double DRIVE_PWR_MAX = 0.90;
 
-    //Declare any variables & constants pertaining to Marker
-    final double MIN_MARKER_POS = 0.29; //start pos
-    final double MAX_MARKER_POS = 1.00; //drop pos
-    final double START_MARK_POS = MIN_MARKER_POS;
-    double currentMarkPos = START_MARK_POS;
-
     //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.80;
     double currentLatchPwr = 0.0;
-    final double MAX_LATCH_SPEED = (1.00) / 2;
-    double currentLatchSpeed = 0.5;
 
-    //Declare any variables & constants pertaining to Mineral System
-    final double CLAW_ARM_START_POS = 0.5;
-    final double MAX_CLAW_SPEED = (1.00) * 0.5;
-    double clawArmPosition = CLAW_ARM_START_POS;
-    final double CLAW_MAX = 1.0;
-    final double CLAW_MIN = 0.0;
-    final double ARM_PWR_MAX = 0.7;
-    final double BODY_PWR_MAX = 0.8;
-    double currentBodyPwr = 0.0;
-    double currentArmPwr = 0.0;
+    //Declare any variables & constants pertaining to Extender System
+    final double EXTENDER_PWR_MAX = 0.5;
+    double currentExtendPwr = 0.0;
 
     //Vuforia Stuff
     //Elapsed time and measurement constants
@@ -108,7 +97,7 @@ public class WoBuZhiDaoOp extends OpMode {
     GoldAlignDetector detector;
 
 
-    public WoBuZhiDaoOp() {}
+    public SquirtleOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -116,23 +105,26 @@ public class WoBuZhiDaoOp extends OpMode {
         driveTrain.setDrivePwrMax(DRIVE_PWR_MAX);
         driveTrain.setMotors();
         telemetry.addData(">", "Drive Train Initialization Successful");
-        //armMotor = hardwareMap.dcMotor.get("arm");
-        //armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        //bodyMotor = hardwareMap.dcMotor.get("body");
-        //bodyMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        //telemetry.addData(">", "Mineral Intake Initialization Successful");
-        //Initialize servos
-        //clawArm = hardwareMap.servo.get("ca");
-        //Initialize Sensors
+
         latchMotor = hardwareMap.dcMotor.get("lm");
-        markerServo = hardwareMap.servo.get("ms");
-        sleighMotor = hardwareMap.dcMotor.get("sm");
-        sleighMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        tiltServo1 = hardwareMap.servo.get("ts1");
-        tiltServo1.setDirection(Servo.Direction.FORWARD);
-        tiltServo2 = hardwareMap.servo.get("ts2");
-        tiltServo2.setDirection(Servo.Direction.REVERSE);
-        telemetry.addData(">", "Sleigh Intake Initialization Successful");
+        telemetry.addData(">", "Latch Initialization Successful");
+
+        scoringMotor = hardwareMap.dcMotor.get("sm");
+        scoringMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        telemetry.addData(">", "Scoring Mechanism Initialization Successful");
+
+        //intakeServo = hardwareMap.servo.get("is");
+        //intakeServo.setDirection(Servo.Direction.FORWARD);
+        //tiltServo1 = hardwareMap.servo.get("ts1");
+        //tiltServo1.setDirection(Servo.Direction.FORWARD);
+        //tiltServo2 = hardwareMap.servo.get("ts2");
+        //tiltServo2.setDirection(Servo.Direction.REVERSE);
+        //telemetry.addData(">", "Intake Initialization Successful");
+
+        extenderMotor = hardwareMap.dcMotor.get("em");
+        extenderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        telemetry.addData(">", "Extender Initialization Successful");
+
         //driveTrain.initializeIMU();
         //initializeDogeforia();
         //telemetry.addData(">", "Vuforia Initialization Successful");
@@ -156,16 +148,25 @@ public class WoBuZhiDaoOp extends OpMode {
 
     void initialization() {
         //Clip and Initialize Specific Robot Mechanisms
-        //initializeMineralIntake();
-        initializeSleighIntake();
+        initializeExtender();
+        //initializeIntake();
         initializeDriveTrain();
-        initializeMarker();
         initializeLatch();
+        initializeScoring();
     }
 
-    void initializeSleighIntake() {
-        currentSleighPwr = Range.clip(currentSleighPwr, -SLEIGH_PWR_MAX, SLEIGH_PWR_MAX);
-        sleighMotor.setPower(currentSleighPwr);
+    void initializeScoring() {
+        currentScoringPwr = Range.clip(currentScoringPwr, -SCORING_PWR_MAX, SCORING_PWR_MAX);
+        scoringMotor.setPower(currentScoringPwr);
+    }
+
+    void initializeExtender() {
+        currentExtendPwr = Range.clip(currentExtendPwr, -EXTENDER_PWR_MAX, EXTENDER_PWR_MAX);
+        extenderMotor.setPower(currentExtendPwr);
+    }
+
+    void initializeIntake() {
+        currentIntakeSpeed = Range.clip(currentIntakeSpeed, 0.5 - INTAKE_SPD_MAX, 0.5 + INTAKE_SPD_MAX);
         currentTiltPos = Range.clip(currentTiltPos, TILT_MIN, TILT_MAX);
         tiltServo1.setPosition(currentTiltPos);
         tiltServo2.setPosition(currentTiltPos);
@@ -176,35 +177,32 @@ public class WoBuZhiDaoOp extends OpMode {
         latchMotor.setPower(currentLatchPwr);
     }
 
-    void initializeMarker() {
-        currentMarkPos = Range.clip(currentMarkPos, MIN_MARKER_POS, MAX_MARKER_POS);
-        markerServo.setPosition(currentMarkPos);
-    }
-
     void initializeDriveTrain() {
         driveTrain.initialize();
     }
 
-    void initializeMineralIntake() {
-        clawArmPosition = Range.clip(clawArmPosition,CLAW_MIN,CLAW_MAX);
-        clawArm.setPosition(clawArmPosition);
-        currentArmPwr = Range.clip(currentArmPwr,-DRIVE_PWR_MAX,DRIVE_PWR_MAX);
-        armMotor.setPower(currentArmPwr);
-        currentBodyPwr = Range.clip(currentBodyPwr,-BODY_PWR_MAX,BODY_PWR_MAX );
-        bodyMotor.setPower(currentBodyPwr);
-    }
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
-        //telemetryMineralIntake();
+        telemetryExtender();
         telemetryDriveTrain();
-        telemetryMarker();
         telemetryLatch();
-        telemetrySleighIntake();
+        //telemetryIntake();
+        telemetryScoring();
     }
 
-    void telemetrySleighIntake() {
-        telemetry.addData("SLEIGH INTAKE", "TELEMETRY");
-        telemetry.addData(">>>Sleigh Pwr", sleighMotor.getPower());
+    void telemetryScoring() {
+        telemetry.addData("SCORING", "TELEMETRY");
+        telemetry.addData("Scoring Pwr", scoringMotor.getPower());
+    }
+
+    void telemetryExtender() {
+        telemetry.addData("EXTENDER", "TELEMETRY");
+        telemetry.addData("Extender Pwr", extenderMotor.getPower());
+    }
+
+    void telemetryIntake() {
+        telemetry.addData("INTAKE", "TELEMETRY");
+        telemetry.addData(">>>Intake Spd", intakeServo.getPosition());
         telemetry.addData(">>>Tilt1 Pos", tiltServo1.getPosition());
         telemetry.addData(">>>Tilt2 Pos", tiltServo2.getPosition());
     }
@@ -214,33 +212,67 @@ public class WoBuZhiDaoOp extends OpMode {
         telemetry.addData("Latch Pwr", latchMotor.getPower());
     }
 
-    void telemetryMarker() {
-        telemetry.addData("MARKER", "TELEMETRY");
-        telemetry.addData("Marker Pos", markerServo.getPosition());
-    }
 
     void telemetryDriveTrain() {
         driveTrain.telemetry();
     }
 
-    void telemetryMineralIntake() {
-        telemetry.addData("MINERAL INTAKE", "TELEMETRY");
-        telemetry.addData(">>>Claw Pos",clawArm.getPosition());
-        telemetry.addData(">>>Arm Pwr",armMotor.getPower());
-        telemetry.addData(">>>Body Pwr",armMotor.getPower());
-    }
-
     void updateData() {
         //Add in update methods for specific robot mechanisms
-        //updateMineralIntake();
+        updateExtender();
         updateDriveTrain();
-        updateMarker();
         updateLatch();
-        updateSleighIntake();
+        //updateIntake();
+        updateScoring();
     }
 
-    void updateSleighIntake() {
-        currentSleighPwr = -gamepad2.left_stick_y * SLEIGH_PWR_MAX;
+    void updateScoring() {
+        if (gamepad2.left_trigger > 0.05) {
+            currentScoringPwr = gamepad2.left_trigger * SCORING_PWR_MAX;
+        }
+        else if (gamepad2.right_trigger > 0.05) {
+            currentScoringPwr = -gamepad2.right_trigger * SCORING_PWR_MAX;
+        }
+        else { currentScoringPwr = 0; }
+        /*switch (scoringState) {
+            case 0:
+                currentScoringPwr = 0;
+                if (gamepad1.x) {
+                    scoringState++;
+                    setTime = this.time;
+                }
+                break;
+            case 1:
+                currentScoringPwr = SCORING_PWR_MAX;
+                if (scoringMotor.getCurrentPosition() >= COUNTS_PER_REV * 0.3) {
+                    scoringState++;
+                    setTime = this.time;
+                }
+                break;
+            case 2:
+                currentScoringPwr = 0;
+                if (waitSec(0.5)) {
+                    scoringState++;
+                    setTime = this.time;
+                }
+                break;
+            case 3:
+                currentScoringPwr = -SCORING_PWR_MAX;
+                if (scoringMotor.getCurrentPosition() <= COUNTS_PER_REV * 0.05) {
+                    scoringState = 0;
+                    setTime = this.time;
+                }
+                break;
+        }*/
+    }
+
+    void updateExtender() {
+        currentExtendPwr = -gamepad2.left_stick_y * EXTENDER_PWR_MAX;
+    }
+
+    void updateIntake() {
+        currentIntakeSpeed = 0.5 + (-gamepad2.right_stick_y * INTAKE_SPD_MAX);
+
         if (gamepad2.left_bumper && tiltDown) {
             currentTiltPos = TILT_MAX;
             tiltDown = false;
@@ -260,33 +292,17 @@ public class WoBuZhiDaoOp extends OpMode {
     }
 
     void updateLatch() {
-        currentLatchPwr = -gamepad2.right_stick_y * LATCH_PWR;
-    }
-
-    void updateMarker() {
-        if(gamepad2.a) {
-            currentMarkPos = MIN_MARKER_POS;
+        if (gamepad1.left_trigger > 0.05) {
+            currentLatchPwr = gamepad1.left_trigger * LATCH_PWR;
         }
-        else if (gamepad2.y) {
-            currentMarkPos = MAX_MARKER_POS;
+        else if (gamepad1.right_trigger > 0.05) {
+            currentLatchPwr = -gamepad1.right_trigger * LATCH_PWR;
         }
+        else { currentLatchPwr = 0; }
     }
 
     void updateDriveTrain() {
         driveTrain.update();
-    }
-
-    void updateMineralIntake() {
-        updateClaw();
-        updateArm();
-        updateBody();
-    }
-    void updateClaw(){ clawArmPosition = -gamepad1.left_stick_y * MAX_CLAW_SPEED + CLAW_ARM_START_POS; }
-    void updateArm(){
-        currentArmPwr = -gamepad2.left_stick_y * DRIVE_PWR_MAX;
-    }
-    void updateBody(){
-        currentBodyPwr = -gamepad2.right_stick_y * DRIVE_PWR_MAX;
     }
 
     //Create Methods that will update the driver data

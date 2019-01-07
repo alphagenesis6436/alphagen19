@@ -5,20 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcontroller.internal.OpModeTemplate;
-
-import static org.firstinspires.ftc.teamcode.GoldPosition.*;
+import org.firstinspires.ftc.robotcontroller.internal.DeathBoxOp;
 
 /**
  * Updated by Alex on 11/5/2017.
  */
-@Autonomous(name = "RedDepotAuto", group = "default")
-@Disabled
-public class RedDepotAuto extends WoBuZhiDaoOp {
+@Autonomous(name = "DefaultAuto", group = "default")
+//@Disabled
+public class DefaultAuto extends WoBuZhiDaoOp {
     //Declare and Initialize any variables needed for this specific autonomous program
-    GoldPosition goldPosition = NOT_FOUND;
 
-    public RedDepotAuto() {}
+
+    public DefaultAuto() {}
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -34,6 +32,8 @@ public class RedDepotAuto extends WoBuZhiDaoOp {
         //Initialize servos
         //clawArm = hardwareMap.servo.get("ca");
         //Initialize Sensors
+        latchMotor = hardwareMap.dcMotor.get("lm");
+        markerServo = hardwareMap.servo.get("ms");
         sleighMotor = hardwareMap.dcMotor.get("sm");
         sleighMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         tiltServo1 = hardwareMap.servo.get("ts1");
@@ -42,8 +42,9 @@ public class RedDepotAuto extends WoBuZhiDaoOp {
         tiltServo2.setDirection(Servo.Direction.REVERSE);
         telemetry.addData(">", "Sleigh Intake Initialization Successful");
         driveTrain.initializeIMU();
-        initializeDogeforia();
-        telemetry.addData(">", "Vuforia Initialization Successful");
+        driveTrain.startIMU();
+        //initializeDogeforia();
+        //telemetry.addData(">", "Vuforia Initialization Successful");
 
         telemetry.addData(">", "Press Start to continue");
     }
@@ -59,7 +60,7 @@ public class RedDepotAuto extends WoBuZhiDaoOp {
         switch(state){
             case 0: //Use this state to reset all hardware devices
                 stateName = "Initial Calibration";
-                markerServo.setPosition(MAX_MARKER_POS);
+                markerServo.setPosition(START_MARK_POS);
                 tiltServo1.setPosition(TILT_START_POS);
                 tiltServo2.setPosition(TILT_START_POS);
                 calibrateAutoVariables();
@@ -68,96 +69,108 @@ public class RedDepotAuto extends WoBuZhiDaoOp {
                 break;
 
             case 2:
-                stateName = "Lower Robot to Ground - Latch Pwr Up";
+                stateName = "Drive Forward to Depot";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                latchMotor.setPower(LATCH_PWR);
+                driveTrain.moveForward(0.8, 4.8);
 
-                if (waitSec(5)) { //Use a boolean value that reads true when state goal is completed
-                    latchMotor.setPower(0);
-                    state = 1000;
+                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
                 }
                 break;
 
             case 4:
-                stateName = "Unlatch Hook From Lander - Drive Forward";
+                stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.runConstantSpeed();
-                driveTrain.moveForward(0.4, 0.5);
+                driveTrain.turnClockwise(135);
+
+                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 6:
+                stateName = "Drive Backward to Wall";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.moveForward(-0.8, -0.75);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
-                    state = 1000;
+                    state++;
                 }
                 break;
 
-                case 6: //Search for Gold Mineral by Turning CCW and using GoldMineralDetector
-                stateName = "Scan for Gold Mineral - Turn CCW";
+            case 8:
+                stateName = "Drop Marker";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                markerServo.setPosition(MAX_MARKER_POS);
+
+                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
+                    markerServo.setPosition(MIN_MARKER_POS);
+                    state++;
+                }
+                break;
+
+            case 10:
+                stateName = "Drive Forward Park in Crater";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.moveForward(0.8, 1.8);
+
+                if (driveTrain.encoderTargetReached || waitSec(5)) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 12:
+                stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.turnClockwise(100);
+
+                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 14:
+                stateName = "Drive Forward Park in Crater";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.moveForward(0.8, 1.1);
+
+                if (driveTrain.encoderTargetReached || waitSec(5)) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 16:
+                stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.turnClockwise(135);
+
+                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 18:
+                stateName = "Drive Forward Park in Crater";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwise(-0.10);
+                driveTrain.moveForward(0.8);
 
-
-                if (goldAligned()) { //if gold found, then it's either center or left position
-                    driveTrain.stopDriveMotors();
-                    if (Math.abs(driveTrain.getHeading()) <= 15) {
-                        goldPosition = CENTER;
-                    }
-                    else {
-                        goldPosition = LEFT;
-                    }
-                    state = 1000; //skip alignment step for gold in right position
-                }
-                else if (driveTrain.getHeading() < -25) { //if gold not found within 75 degree ccw turn, then cube is right position
-                    driveTrain.stopDriveMotors();
-                    goldPosition = RIGHT;
-                    state = 1000;
-                }
-                break;
-
-
-            case 8: //Turn Clockwise to face gold cube
-                stateName = "Align to Cube in Right Position - Turn CW";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.runConstantSpeed();
-                if (driveTrain.getHeading() < 0) {
-                    driveTrain.turnClockwise(0.80); //turn quickly until heading is 25 degrees cw of initial position
-                }
-                else {
-                    driveTrain.turnClockwise(0.10);
-                }
-
-                if (goldAligned()) {
+                if (waitSec(4.5)) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     state = 1000;
                 }
-                else if (driveTrain.getHeading() > 40) { //if gold not found, STOP at 75 degrees cw of initial position
-                    driveTrain.stopDriveMotors();
-                    state = 1000;
-                }
-                break;
-
-            case 10: //Knock off cube - Drive Forward
-                stateName = "Knock off cube - Drive Forward";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.runConstantSpeed();
-                double targetRevolutions = 0;
-                switch (goldPosition) {
-                    case LEFT:
-                    case RIGHT: targetRevolutions = 3.75;
-                        break;
-                    case CENTER: targetRevolutions = 3.25;
-                        break;
-                }
-                driveTrain.moveForward(0.80, targetRevolutions);
-                if (driveTrain.encoderTargetReached) {
-                    driveTrain.stopDriveMotors();
-                    state = 1000;
-                }
-                break;
 
             case 1000: //Run When Autonomous is Complete
                 stateName = "Autonomous Complete";
                 //Set all motors to zero and servos to initial positions
+                driveTrain.stopDriveMotors();
                 calibrateAutoVariables();
                 resetEncoders();
                 break;
@@ -166,7 +179,7 @@ public class RedDepotAuto extends WoBuZhiDaoOp {
                 stateName = "Calibrating";
                 calibrateAutoVariables();
                 resetEncoders();
-                if (waitSec(1)) {
+                if (waitSec(0.01)) {
                     state++;
                     setTime = this.time;
                 }

@@ -5,15 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 /**
- * Created by Alex on 12/8/2018.
+ * Modified by Alex on 1/3/2019.
  */
 
 
 @TeleOp(name = "Drive Train Test", group = "Default")
-@Disabled
+//@Disabled
 public class DriveTrainTestOp extends OpMode {
     //Declare any motors
-    DriveTrain driveTrain = new DriveTrain(DriveMode.TANK, 4);
+    DriveTrain driveTrain = new DriveTrain(DriveMode.TANK, 2);
 
     //Declare any variables & constants pertaining to drive train
     final double DRIVE_PWR_MAX = 0.80;

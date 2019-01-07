@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * Updated by Alex on 12/7/2018.
  */
 @Autonomous(name = "VuforiaRangerRedAuto", group = "default")
-//@Disabled
+@Disabled
 public class VuforiaRangerRedAuto extends VuforiaRangerOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = GoldPosition.NOT_FOUND;

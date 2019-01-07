@@ -120,16 +120,16 @@ public class DriveTrain {
                     backLeft = hardwareMap.dcMotor.get("bl");
 
                 }
-                frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-                frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-                backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-                backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+                frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+                frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+                backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+                backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
             }
             else {
                 frontRight = hardwareMap.dcMotor.get("rd");
                 frontLeft = hardwareMap.dcMotor.get("ld");
-                frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-                frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+                frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+                frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
             }
             telemetry.addData(">", "Drive Train Initialization Successful");
         }
@@ -399,6 +399,11 @@ public class DriveTrain {
             backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+    }
+
+    public float getRevolutionsDriven() {
+        telemetry.addData("Revolutions Driven", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
+        return -angles.firstAngle;
     }
 
     public void move(double pwr_fr, double pwr_fl, double pwr_br, double pwr_bl) {
