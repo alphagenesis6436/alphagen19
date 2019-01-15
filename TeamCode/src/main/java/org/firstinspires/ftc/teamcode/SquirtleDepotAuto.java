@@ -11,7 +11,7 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.NOT_FOUND;
 import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
 
 /**
- * Updated by Alex on 1/7/2019.
+ * Updated by Alex on 1/15/2019.
  */
 @Autonomous(name = "SquirtleDepotAuto", group = "default")
 //@Disabled
@@ -93,7 +93,8 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(-0.9, -1.0);
+                driveTrain.moveForward(-0.9, -1.45);
+                extendIntake(0.9);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
@@ -103,6 +104,61 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
             case 4:
+                stateName = "Extend Intake";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                extendIntake(0.9);
+
+                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
+                    extendIntake(0);
+                    state++;
+                }
+                break;
+
+            case 6:
+                stateName = "Drop Marker - Rotate intake down";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                setTiltServos(TILT_MIN);
+
+                if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
+                    state++;
+                }
+                break;
+
+            case 8:
+                stateName = "Rotate intake up";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                setTiltServos(TILT_MAX);
+                extendIntake(-0.9);
+
+                if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
+                    state++;
+                }
+                break;
+
+            case 10:
+                stateName = "Retract Intake";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                extendIntake(-0.9);
+
+                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
+                    extendIntake(0);
+                    state++;
+                }
+                break;
+
+            case 12:
+                stateName = "Move Toward Lander - Drive Backward";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.runConstantSpeed();
+                driveTrain.moveForward(0.9, 0.5);
+
+                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 14:
                 stateName = "Turn to have phone face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -114,7 +170,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 6: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
+            case 16: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
                 stateName = "Scan for Gold Mineral - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -134,7 +190,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 8: //Drive Forward to face gold cube
+            case 18: //Drive Forward to face gold cube
                 stateName = "Align to Cube in Right Position - Drive Forward (SKIP UNLESS RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -153,7 +209,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 10:
+            case 20:
                 stateName = "Turn to have front of robot face sampling field - Turn 90 cw (30 ccw if RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -166,7 +222,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 12: //Knock off cube - Drive Forward
+            case 22: //Knock off cube - Drive Forward
                 stateName = "Knock off cube - Drive Backward (Forward if RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -182,7 +238,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 14: //Knock off cube - Drive Forward
+            case 24: //Knock off cube - Drive Forward
                 stateName = "Knock off cube - Drive Forward (Backward if RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -198,7 +254,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 16:
+            case 26:
                 stateName = "Turn to have phone face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -211,29 +267,17 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 18:
-                stateName = "Drive Backward To Align with Depot Wall";
+            case 28:
+                stateName = "Drive Backward Park in Crater";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                double targetRevolutions = (goldPosition == RIGHT)? -5.75 : -4.0;
+                double targetRevolutions = (goldPosition == RIGHT)? -6.75 : -5.0;
                 driveTrain.moveForward(-0.9, targetRevolutions);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     state = 1000;
                 }
-
-            case 20:
-                stateName = "Turn to Parallel with Wall - Turn 90 ccw";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.runConstantSpeed();
-                driveTrain.turnClockwise(-135);
-
-                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    driveTrain.stopDriveMotors();
-                    state++;
-                }
-                break;
 
 
             case 1000: //Run When Autonomous is Complete
