@@ -38,7 +38,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 
 @TeleOp(name = "WoBuZhiDaoOp", group = "Default")
-//@Disabled
+@Disabled
 public class WoBuZhiDaoOp extends OpMode {
     //Declare any motors, servos, and sensors
     DriveTrain driveTrain = new DriveTrain(DriveMode.ARCADE, 4);

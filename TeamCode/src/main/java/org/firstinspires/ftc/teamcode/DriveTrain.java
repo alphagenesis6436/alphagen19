@@ -47,6 +47,7 @@ public class DriveTrain {
     //Class variables for TeleOp Use
     private DriveMode driveMode;
     private int numOfMotors; //Only 2 and 4 are accepted values
+    private boolean frontModeOn = true; //flips the front and back of robot for ARCADE & TANK
     private double drivePwrMax = 0.80; //80% by default
     private double turnPwrMax = 0.60; //60% by default, only for slide/mecanum/holonomic
     private double gearRatio = 1; //Driven / Driver, 1 by default
@@ -128,8 +129,8 @@ public class DriveTrain {
             else {
                 frontRight = hardwareMap.dcMotor.get("rd");
                 frontLeft = hardwareMap.dcMotor.get("ld");
-                frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-                frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+                frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+                frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             }
             telemetry.addData(">", "Drive Train Initialization Successful");
         }
@@ -162,16 +163,50 @@ public class DriveTrain {
     }
 
     private void updateTankDrive() {
-        flPower = -gamepad.left_stick_y * drivePwrMax;
-        blPower = -gamepad.left_stick_y * drivePwrMax;
-        frPower = -gamepad.right_stick_y * drivePwrMax;
-        brPower = -gamepad.right_stick_y * drivePwrMax;
+        if (frontModeOn) {
+            flPower = -gamepad.left_stick_y * drivePwrMax;
+            blPower = -gamepad.left_stick_y * drivePwrMax;
+            frPower = -gamepad.right_stick_y * drivePwrMax;
+            brPower = -gamepad.right_stick_y * drivePwrMax;
+        }
+        else {
+            flPower = gamepad.right_stick_y * drivePwrMax;
+            blPower = gamepad.right_stick_y * drivePwrMax;
+            frPower = gamepad.left_stick_y * drivePwrMax;
+            brPower = gamepad.left_stick_y * drivePwrMax;
+        }
+        if (gamepad.y) {
+            frontModeOn = true;
+        }
+        else if (gamepad.a) {
+            frontModeOn = false;
+        }
+        if (gamepad.right_bumper) {
+            driveMode = DriveMode.ARCADE;
+        }
     }
     private void updateArcadeDrive() {
-        flPower = (-gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
-        frPower = (-gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
-        blPower = (-gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
-        brPower = (-gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
+        if (frontModeOn) {
+            flPower = (-gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
+            frPower = (-gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
+            blPower = (-gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
+            brPower = (-gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
+        }
+        else {
+            flPower = (gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
+            frPower = (gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
+            blPower = (gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
+            brPower = (gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
+        }
+        if (gamepad.y) {
+            frontModeOn = true;
+        }
+        else if (gamepad.a) {
+            frontModeOn = false;
+        }
+        if (gamepad.left_bumper) {
+            driveMode = DriveMode.TANK;
+        }
     }
     private void updateSlideDrive() { //FL = East, BR = West, BL = South, FR = North
         if (!(gamepad.left_stick_y < 0.05 && gamepad.left_stick_y > -0.05)) {
@@ -323,6 +358,7 @@ public class DriveTrain {
                     telemetry.addData(">>>Back Right Pwr", backRight.getPower());
                     break;
             }
+            telemetry.addLine();
         }
 
     }
@@ -401,9 +437,9 @@ public class DriveTrain {
         }
     }
 
-    public float getRevolutionsDriven() {
+    public double getRevolutionsDriven() {
         telemetry.addData("Revolutions Driven", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
-        return -angles.firstAngle;
+        return frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio;
     }
 
     public void move(double pwr_fr, double pwr_fl, double pwr_br, double pwr_bl) {

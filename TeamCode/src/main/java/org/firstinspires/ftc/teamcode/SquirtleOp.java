@@ -40,16 +40,18 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 //@Disabled
 public class SquirtleOp extends OpMode {
     //Declare any motors, servos, and sensors
-    DriveTrain driveTrain = new DriveTrain(DriveMode.TANK, 2);
+    DriveTrain driveTrain = new DriveTrain(DriveMode.ARCADE, 2);
     DcMotor latchMotor; //40:1 AndyMark //encoder
-    DcMotor extenderMotor; // Rev Hex Core Motor //encoder
+    DcMotor extenderMotor1; // Rev Hex Core Motor //encoder
+    DcMotor extenderMotor2; // Rev Hex Core Motor //encoder
     DcMotor scoringMotor; //40:1 AndyMark Neverest Motor //encoder
     Servo intakeServo; //360 HiTechnic
     Servo tiltServo1; //180 Rev Servo, left side
     Servo tiltServo2; //180 Rev Servo, right side
 
     //Declare any variables & constants pertaining to Scoring
-    final double SCORING_PWR_MAX = 0.4;
+    final double CUBE_PWR_MAX = 0.4;
+    final double BALL_PWR_MAX = 0.3;
     double currentScoringPwr = 0.0;
     int scoringState = 0;
     final int COUNTS_PER_REV = 1120;
@@ -59,9 +61,11 @@ public class SquirtleOp extends OpMode {
     final double INTAKE_SPD_MAX = (1.00) / 2;
     double currentIntakeSpeed = 0.5;
     final double TILT_MIN = 0.0; //Intake is Down
-    final double TILT_MAX = 0.45; //Intake is Up
+    final double TILT_SCORE = 0.45; //Intake ready to score
+    final double TILT_MAX = 0.54; //Intake is Up
     final double TILT_START_POS = TILT_MAX;
     double currentTiltPos = TILT_START_POS;
+    double tiltDelta = 0.01;
     boolean tiltDown = false;
 
     //Declare any variables & constants pertaining to Drive Train
@@ -72,7 +76,7 @@ public class SquirtleOp extends OpMode {
     double currentLatchPwr = 0.0;
 
     //Declare any variables & constants pertaining to Extender System
-    final double EXTENDER_PWR_MAX = 0.5;
+    final double EXTENDER_PWR_MAX = 0.8;
     double currentExtendPwr = 0.0;
 
     //Vuforia Stuff
@@ -113,16 +117,18 @@ public class SquirtleOp extends OpMode {
         scoringMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         telemetry.addData(">", "Scoring Mechanism Initialization Successful");
 
-        //intakeServo = hardwareMap.servo.get("is");
-        //intakeServo.setDirection(Servo.Direction.FORWARD);
-        //tiltServo1 = hardwareMap.servo.get("ts1");
-        //tiltServo1.setDirection(Servo.Direction.FORWARD);
-        //tiltServo2 = hardwareMap.servo.get("ts2");
-        //tiltServo2.setDirection(Servo.Direction.REVERSE);
-        //telemetry.addData(">", "Intake Initialization Successful");
+        intakeServo = hardwareMap.servo.get("is");
+        intakeServo.setDirection(Servo.Direction.REVERSE);
+        tiltServo1 = hardwareMap.servo.get("ts1");
+        tiltServo1.setDirection(Servo.Direction.FORWARD);
+        tiltServo2 = hardwareMap.servo.get("ts2");
+        tiltServo2.setDirection(Servo.Direction.REVERSE);
+        telemetry.addData(">", "Intake Initialization Successful");
 
-        extenderMotor = hardwareMap.dcMotor.get("em");
-        extenderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        extenderMotor1 = hardwareMap.dcMotor.get("em1");
+        extenderMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
+        extenderMotor2 = hardwareMap.dcMotor.get("em2");
+        extenderMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
         telemetry.addData(">", "Extender Initialization Successful");
 
         //driveTrain.initializeIMU();
@@ -148,25 +154,27 @@ public class SquirtleOp extends OpMode {
 
     void initialization() {
         //Clip and Initialize Specific Robot Mechanisms
-        initializeExtender();
-        //initializeIntake();
         initializeDriveTrain();
-        initializeLatch();
+        initializeIntake();
+        initializeExtender();
         initializeScoring();
+        initializeLatch();
     }
 
     void initializeScoring() {
-        currentScoringPwr = Range.clip(currentScoringPwr, -SCORING_PWR_MAX, SCORING_PWR_MAX);
+        currentScoringPwr = Range.clip(currentScoringPwr, -CUBE_PWR_MAX, CUBE_PWR_MAX);
         scoringMotor.setPower(currentScoringPwr);
     }
 
     void initializeExtender() {
         currentExtendPwr = Range.clip(currentExtendPwr, -EXTENDER_PWR_MAX, EXTENDER_PWR_MAX);
-        extenderMotor.setPower(currentExtendPwr);
+        extenderMotor1.setPower(currentExtendPwr);
+        extenderMotor2.setPower(currentExtendPwr);
     }
 
     void initializeIntake() {
         currentIntakeSpeed = Range.clip(currentIntakeSpeed, 0.5 - INTAKE_SPD_MAX, 0.5 + INTAKE_SPD_MAX);
+        intakeServo.setPosition(currentIntakeSpeed);
         currentTiltPos = Range.clip(currentTiltPos, TILT_MIN, TILT_MAX);
         tiltServo1.setPosition(currentTiltPos);
         tiltServo2.setPosition(currentTiltPos);
@@ -183,21 +191,23 @@ public class SquirtleOp extends OpMode {
 
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
-        telemetryExtender();
         telemetryDriveTrain();
-        telemetryLatch();
-        //telemetryIntake();
+        telemetryIntake();
+        telemetryExtender();
         telemetryScoring();
+        telemetryLatch();
     }
 
     void telemetryScoring() {
         telemetry.addData("SCORING", "TELEMETRY");
         telemetry.addData("Scoring Pwr", scoringMotor.getPower());
+        telemetry.addLine();
     }
 
     void telemetryExtender() {
         telemetry.addData("EXTENDER", "TELEMETRY");
-        telemetry.addData("Extender Pwr", extenderMotor.getPower());
+        telemetry.addData("Extender Pwr", extenderMotor1.getPower());
+        telemetry.addLine();
     }
 
     void telemetryIntake() {
@@ -205,11 +215,13 @@ public class SquirtleOp extends OpMode {
         telemetry.addData(">>>Intake Spd", intakeServo.getPosition());
         telemetry.addData(">>>Tilt1 Pos", tiltServo1.getPosition());
         telemetry.addData(">>>Tilt2 Pos", tiltServo2.getPosition());
+        telemetry.addLine();
     }
 
     void telemetryLatch() {
         telemetry.addData("LATCH", "TELEMETRY");
         telemetry.addData("Latch Pwr", latchMotor.getPower());
+        telemetry.addLine();
     }
 
 
@@ -222,72 +234,41 @@ public class SquirtleOp extends OpMode {
         updateExtender();
         updateDriveTrain();
         updateLatch();
-        //updateIntake();
+        updateIntake();
         updateScoring();
     }
 
     void updateScoring() {
-        if (gamepad2.left_trigger > 0.05) {
-            currentScoringPwr = gamepad2.left_trigger * SCORING_PWR_MAX;
+        if (gamepad2.left_trigger > 0.05) { //bring scoring arm down
+            currentScoringPwr = -gamepad2.left_trigger * (BALL_PWR_MAX/2);
         }
-        else if (gamepad2.right_trigger > 0.05) {
-            currentScoringPwr = -gamepad2.right_trigger * SCORING_PWR_MAX;
+        else if (gamepad2.b) { //score balls
+            currentScoringPwr = BALL_PWR_MAX;
+        }
+        else if (gamepad2.x) { //score cubes
+            currentScoringPwr = CUBE_PWR_MAX;
         }
         else { currentScoringPwr = 0; }
-        /*switch (scoringState) {
-            case 0:
-                currentScoringPwr = 0;
-                if (gamepad1.x) {
-                    scoringState++;
-                    setTime = this.time;
-                }
-                break;
-            case 1:
-                currentScoringPwr = SCORING_PWR_MAX;
-                if (scoringMotor.getCurrentPosition() >= COUNTS_PER_REV * 0.3) {
-                    scoringState++;
-                    setTime = this.time;
-                }
-                break;
-            case 2:
-                currentScoringPwr = 0;
-                if (waitSec(0.5)) {
-                    scoringState++;
-                    setTime = this.time;
-                }
-                break;
-            case 3:
-                currentScoringPwr = -SCORING_PWR_MAX;
-                if (scoringMotor.getCurrentPosition() <= COUNTS_PER_REV * 0.05) {
-                    scoringState = 0;
-                    setTime = this.time;
-                }
-                break;
-        }*/
     }
 
     void updateExtender() {
         currentExtendPwr = -gamepad2.left_stick_y * EXTENDER_PWR_MAX;
     }
 
-    void updateIntake() {
+    void  updateIntake() {
         currentIntakeSpeed = 0.5 + (-gamepad2.right_stick_y * INTAKE_SPD_MAX);
 
-        if (gamepad2.left_bumper && tiltDown) {
+        if (gamepad2.y) {
             currentTiltPos = TILT_MAX;
-            tiltDown = false;
         }
-        else if (gamepad2.right_bumper && !tiltDown) {
-            currentTiltPos = TILT_MAX - 0.20;
-            tiltDown = true;
-            setTime = this.time;
+        if (gamepad2.a) {
+            currentTiltPos = TILT_SCORE;
         }
-        if (tiltDown && waitSec(1)) {
-            tiltServo1.getController().pwmEnable();
-            currentTiltPos = TILT_MIN;
+        else if (gamepad2.dpad_up) {
+            currentTiltPos += tiltDelta;
         }
-        else if (tiltDown && waitSec(0.1)) {
-            tiltServo1.getController().pwmDisable();
+        else if (gamepad2.dpad_down) {
+            currentTiltPos -= tiltDelta;
         }
     }
 
@@ -304,6 +285,32 @@ public class SquirtleOp extends OpMode {
     void updateDriveTrain() {
         driveTrain.update();
     }
+
+    void extendIntake(double power) {
+        extenderMotor1.setPower(power);
+        extenderMotor2.setPower(power);
+    }
+    void setTiltServos(double pos) {
+        pos = Range.clip(pos, TILT_MIN, TILT_MAX);
+        tiltServo1.setPosition(pos);
+        tiltServo2.setPosition(pos);
+    }
+
+    void extendIntake(double power, double revolutions) { //only use if attach encoders to extender
+        double target = revolutions * COUNTS_PER_REV;
+        double error = target - extenderMotor1.getCurrentPosition();
+        if (!extenderValueReached) {
+            extendIntake(power);
+        }
+        if (Math.abs(error) <= 4) {
+            extendIntake(0);
+            extenderValueReached = true;
+        }
+        else {//Wait until target position is reached
+            telemetry.addData("Rotations left", String.format("%.2f", error / COUNTS_PER_REV));
+        }
+    }
+    boolean extenderValueReached = false;
 
     //Create Methods that will update the driver data
     void initializeDogeforia() {

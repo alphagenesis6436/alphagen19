@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
 @TeleOp(name = "Drive Train Test", group = "Default")
-//@Disabled
+@Disabled
 public class DriveTrainTestOp extends OpMode {
     //Declare any motors
     DriveTrain driveTrain = new DriveTrain(DriveMode.TANK, 2);

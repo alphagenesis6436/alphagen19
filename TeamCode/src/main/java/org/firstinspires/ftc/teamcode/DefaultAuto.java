@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcontroller.internal.DeathBoxOp;
  * Updated by Alex on 11/5/2017.
  */
 @Autonomous(name = "DefaultAuto", group = "default")
-//@Disabled
+@Disabled
 public class DefaultAuto extends WoBuZhiDaoOp {
     //Declare and Initialize any variables needed for this specific autonomous program
 

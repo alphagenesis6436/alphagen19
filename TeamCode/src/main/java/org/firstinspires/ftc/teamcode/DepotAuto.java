@@ -13,7 +13,7 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.*;
  * Updated by Alex on 11/5/2017.
  */
 @Autonomous(name = "DepotAuto", group = "default")
-//@Disabled
+@Disabled
 public class DepotAuto extends WoBuZhiDaoOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
