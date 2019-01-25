@@ -18,7 +18,7 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
 public class SquirtleDepotAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
-    double revsTraveledFromLastState = 0.0;
+    String goldPos = "NOT FOUND";
 
     public SquirtleDepotAuto() {}
 
@@ -36,8 +36,8 @@ public class SquirtleDepotAuto extends SquirtleOp {
         scoringMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         telemetry.addData(">", "Scoring Mechanism Initialization Successful");
 
-        intakeServo = hardwareMap.servo.get("is");
-        intakeServo.setDirection(Servo.Direction.REVERSE);
+        intakeMotor = hardwareMap.dcMotor.get("im");
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         tiltServo1 = hardwareMap.servo.get("ts1");
         tiltServo1.setDirection(Servo.Direction.FORWARD);
         tiltServo2 = hardwareMap.servo.get("ts2");
@@ -45,7 +45,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
         telemetry.addData(">", "Intake Initialization Successful");
 
         extenderMotor1 = hardwareMap.dcMotor.get("em1");
-        extenderMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
+        extenderMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         extenderMotor2 = hardwareMap.dcMotor.get("em2");
         extenderMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
         telemetry.addData(">", "Extender Initialization Successful");
@@ -63,6 +63,18 @@ public class SquirtleDepotAuto extends SquirtleOp {
         telemetry.addData(stateName, state);
         telemetry.addData("current time", String.format("%.1f", this.time));
         telemetry.addData("state time", String.format("%.1f", this.time - setTime));
+        telemetry.addData("Gold Position", goldPos);
+        switch (goldPosition) {
+            case NOT_FOUND: goldPos = "NOT FOUND";
+                break;
+            case LEFT: goldPos = "LEFT";
+                break;
+            case CENTER: goldPos = "CENTER";
+                break;
+            case RIGHT: goldPos = "RIGHT";
+                break;
+        }
+        telemetry.addLine();
 
         //Use Switch statement to proceed through Autonomous strategy (only use even cases for steps)
         switch(state){
@@ -72,81 +84,126 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 tiltServo2.setPosition(TILT_START_POS);
                 scoringMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 scoringMotor.setPower(0);
+                latchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                latchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 calibrateAutoVariables();
                 resetEncoders();
                 state++;
                 break;
 
-            /*case 2:
+            case 2:
                 stateName = "Lower Robot to Ground - Latch Pwr Up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                latchMotor.setPower(LATCH_PWR);
+                extendLatch(LATCH_PWR, 19.3);
 
-                if (waitSec(5)) { //Use a boolean value that reads true when state goal is completed
+                if (latchValueReached) { //Use a boolean value that reads true when state goal is completed
                     latchMotor.setPower(0);
-                    state = 1000;
-                }
-                break;*/
-
-            case 2:
-                stateName = "Move Toward Sampling Field - Drive Backward";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.runConstantSpeed();
-
-                driveTrain.moveForward(-0.9, -1.45);
-                extendIntake(0.9);
-
-                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
-                    driveTrain.stopDriveMotors();
                     state++;
                 }
                 break;
 
             case 4:
-                stateName = "Extend Intake";
+                stateName = "Turn to have hook unlatch - Turn 15 cw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendIntake(0.9);
+                driveTrain.runConstantSpeed();
+                driveTrain.turnClockwise(15);
 
-                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
-                    extendIntake(0);
+                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
                     state++;
                 }
                 break;
 
             case 6:
-                stateName = "Drop Marker - Rotate intake down";
+                stateName = "Move Toward Sampling Field - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                setTiltServos(TILT_MIN);
+                driveTrain.runConstantSpeed();
 
-                if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
+                driveTrain.moveForward(-0.9, -1);
+
+                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
                     state++;
                 }
                 break;
 
             case 8:
+                stateName = "Turn to original angle";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.runConstantSpeed();
+                driveTrain.turnClockwisePID(0);
+
+                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            case 10:
+                stateName = "Move Toward Sampling Field - Drive Backward";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.runConstantSpeed();
+
+                driveTrain.moveForward(-0.9, -0.52);
+                extendIntake(0.9);
+
+                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    state++;
+                }
+                break;
+
+            /*case 12:
+                stateName = "Extend Intake";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                extendIntake(0.9);
+
+                if (waitSec(0.7)) { //Use a boolean value that reads true when state goal is completed
+                    extendIntake(0);
+                    state++;
+                }
+                break;*/
+
+            case 14:
+                stateName = "Drop Marker - Rotate intake down";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                extendIntake(0);
+                if (waitSec(0.55)) {
+                    intakeMotor.setPower(0.70);
+                }
+                setTiltServos(TILT_MIN);
+
+
+                if (waitSec(1.25)) { //Use a boolean value that reads true when state goal is completed
+                   state++;
+                }
+                break;
+
+            case 16:
                 stateName = "Rotate intake up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 setTiltServos(TILT_MAX);
                 extendIntake(-0.9);
 
                 if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
+                    intakeMotor.setPower(0);
                     state++;
                 }
                 break;
 
-            case 10:
+            case 18:
                 stateName = "Retract Intake";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendIntake(-0.9);
+                extendIntake(-0.4);
+                driveTrain.moveForward(0.9, 0.15); //AND back up
 
-                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
+                if (waitSec(0.95)) { //Use a boolean value that reads true when state goal is completed
                     extendIntake(0);
                     state++;
                 }
                 break;
 
-            case 12:
+            /*case 12:
                 stateName = "Move Toward Lander - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
@@ -156,13 +213,13 @@ public class SquirtleDepotAuto extends SquirtleOp {
                     driveTrain.stopDriveMotors();
                     state++;
                 }
-                break;
+                break;*/
 
-            case 14:
+            case 20:
                 stateName = "Turn to have phone face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwise(-90);
+                driveTrain.turnClockwisePID(-90);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -170,16 +227,15 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 16: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
+            case 22: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
                 stateName = "Scan for Gold Mineral - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.moveForward(-0.35, -1.5);
+                driveTrain.moveForward(-0.25, -1.5);
 
                 if (goldAligned()) { //if gold found, then it's either center or left position
                     driveTrain.stopDriveMotors();
                     goldPosition = (Math.abs(driveTrain.getRevolutionsDriven()) <= 1) ? CENTER : LEFT;
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
                     state += 3; //skip alignment step for gold in right position
                 }
                 else if (driveTrain.encoderTargetReached) { //if gold not found within 1.5 revolutions, then cube is right position
@@ -190,12 +246,12 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 18: //Drive Forward to face gold cube
+            case 24: //Drive Forward to face gold cube
                 stateName = "Align to Cube in Right Position - Drive Forward (SKIP UNLESS RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
                 if (goldPosition == RIGHT) {
-                    driveTrain.moveForward(0.90, 1.75);
+                    driveTrain.moveForward(0.90, 1.65);
                 }
                 else {
                     driveTrain.moveForward(0, 0);
@@ -209,12 +265,13 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 20:
+            case 26:
                 stateName = "Turn to have front of robot face sampling field - Turn 90 cw (30 ccw if RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                double targetAngle = (goldPosition == RIGHT)? -120 : 0;
-                driveTrain.turnClockwise(targetAngle);
+                int targetAngle = (goldPosition == RIGHT)? -140 : 0;
+                telemetry.addData("TargetAngle", targetAngle);
+                driveTrain.turnClockwisePID(targetAngle);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -222,15 +279,15 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 22: //Knock off cube - Drive Forward
+            case 28: //Knock off cube - Drive Forward
                 stateName = "Knock off cube - Drive Backward (Forward if RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
                 if (goldPosition == RIGHT) {
-                    driveTrain.moveForward(0.90, 1.5);
+                    driveTrain.moveForward(0.90, 1.0);
                 }
                 else {
-                    driveTrain.moveForward(-0.90, -0.9);
+                    driveTrain.moveForward(-0.90, -0.6);
                 }
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -238,15 +295,15 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 24: //Knock off cube - Drive Forward
+            case 30: //Knock off cube - Drive Forward
                 stateName = "Knock off cube - Drive Forward (Backward if RIGHT)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
                 if (goldPosition == RIGHT) {
-                    driveTrain.moveForward(-0.90, -1.5);
+                    driveTrain.moveForward(-0.90, -1.2);
                 }
                 else {
-                    driveTrain.moveForward(0.90, 0.9);
+                    driveTrain.moveForward(0.90, 0.8);
                 }
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -254,11 +311,11 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 26:
+            case 32:
                 stateName = "Turn to have phone face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwise(-90);
+                driveTrain.turnClockwisePID(-90);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -267,14 +324,16 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 28:
+            case 34:
                 stateName = "Drive Backward Park in Crater";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.runConstantSpeed();
-                double targetRevolutions = (goldPosition == RIGHT)? -6.75 : -5.0;
-                driveTrain.moveForward(-0.9, targetRevolutions);
+                driveTrain.runConstantPower();
+                double targetTime = (goldPosition == LEFT)? 3 : 3.5;
+                driveTrain.moveForward(-0.9);
+                extendIntake(waitSec(1) ? 0 : 0.4);
 
-                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
+
+                if (waitSec(targetTime)) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     state = 1000;
                 }

@@ -479,7 +479,7 @@ public class DriveTrain {
         double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION_40;
         double error = target - frontLeft.getCurrentPosition();
         if (!encoderTargetReached) {
-            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 2) {
+            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 4) {
                 speed = (0.10 * error / Math.abs(error)) + (error * kp);
             }
             moveForward(speed);
@@ -667,7 +667,7 @@ public class DriveTrain {
         anglePID.update(-angles.firstAngle, getRuntime());
         double power = anglePID.adjustmentValue();
         power = Range.clip(power, -1, 1); //ensure power doesn't exceed max speed
-        if (Math.abs(anglePID.getError()) >= 5) //5 degree angle slack / uncertainty
+        if (Math.abs(anglePID.getError()) >= 3) //3 degree angle slack / uncertainty
             turnClockwise(power);
         else {
             stopDriveMotors();
