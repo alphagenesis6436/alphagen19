@@ -175,13 +175,13 @@ public class DriveTrain {
             frPower = gamepad.left_stick_y * drivePwrMax;
             brPower = gamepad.left_stick_y * drivePwrMax;
         }
-        if (gamepad.y) {
+        if (gamepad.a) {
             frontModeOn = true;
         }
-        else if (gamepad.a) {
+        else if (gamepad.y) {
             frontModeOn = false;
         }
-        if (gamepad.right_bumper) {
+        if (gamepad.b) {
             driveMode = DriveMode.ARCADE;
         }
     }
@@ -204,7 +204,7 @@ public class DriveTrain {
         else if (gamepad.a) {
             frontModeOn = false;
         }
-        if (gamepad.left_bumper) {
+        if (gamepad.x) {
             driveMode = DriveMode.TANK;
         }
     }

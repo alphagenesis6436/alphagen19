@@ -74,6 +74,9 @@ public class SquirtleOp extends OpMode {
     //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.95;
     double currentLatchPwr = 0.0;
+    boolean latchIsRunning = false;
+    boolean latchExtending = false;
+    boolean latchRetracting = false;
 
     //Declare any variables & constants pertaining to Extender System
     final double EXTENDER_PWR_MAX = 0.8;
@@ -139,6 +142,8 @@ public class SquirtleOp extends OpMode {
     }
     @Override public void start() {
         runtime.reset();
+        latchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        latchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     @Override public void loop() {
         //Update all the data based on driver input
@@ -274,13 +279,42 @@ public class SquirtleOp extends OpMode {
     }
 
     void updateLatch() {
-        if (gamepad1.left_trigger > 0.05) { //extends latch
-            currentLatchPwr = gamepad1.left_trigger * LATCH_PWR;
+        if (!latchIsRunning) {
+            if (gamepad1.left_trigger > 0.05) { //retracts latch
+                currentLatchPwr = -gamepad1.left_trigger * LATCH_PWR;
+            }
+            else if (gamepad1.right_trigger > 0.05) { //extends latch
+                currentLatchPwr = gamepad1.right_trigger * LATCH_PWR;
+            }
+            else { currentLatchPwr = 0; }
         }
-        else if (gamepad1.right_trigger > 0.05) { //retracts latch
-            currentLatchPwr = -gamepad1.right_trigger * LATCH_PWR;
+        else {
+            if (latchExtending) {
+                extendLatch(LATCH_PWR, 19.3);
+            }
+            if (latchRetracting) {
+                extendLatch(-LATCH_PWR, 0);
+            }
+            if (latchValueReached) {
+                latchValueReached = false;
+                latchMotor.setPower(0);
+                latchExtending = false;
+                latchRetracting = false;
+                latchIsRunning = false;
+            }
         }
-        else { currentLatchPwr = 0; }
+        if (gamepad1.left_bumper) { //automatically retract latch completely
+            latchIsRunning = true;
+            latchExtending = false;
+            latchRetracting = true;
+            extendLatch(-LATCH_PWR, 0);
+        }
+        if (gamepad1.right_bumper) { //automatically extend latch completely
+            latchIsRunning = true;
+            latchExtending = true;
+            latchRetracting = false;
+            extendLatch(LATCH_PWR, 19.3);
+        }
     }
 
     void updateDriveTrain() {

@@ -19,6 +19,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
     String goldPos = "NOT FOUND";
+    boolean latchReset = false;
 
     public SquirtleCraterAuto() {}
 
@@ -75,6 +76,19 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 break;
         }
         telemetry.addLine();
+
+        //retract latch
+        if (state > 4) {
+            if (!latchReset) {
+                extendLatch(-LATCH_PWR, 0);
+            }
+            else {
+                latchMotor.setPower(0);
+            }
+            if (latchValueReached) {
+                latchReset = true;
+            }
+        }
 
         //Use Switch statement to proceed through Autonomous strategy (only use even cases for steps)
         switch(state){

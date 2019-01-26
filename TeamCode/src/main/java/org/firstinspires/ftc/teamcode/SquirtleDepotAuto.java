@@ -19,6 +19,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
     String goldPos = "NOT FOUND";
+    boolean latchReset = false;
 
     public SquirtleDepotAuto() {}
 
@@ -75,6 +76,19 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
         }
         telemetry.addLine();
+
+        //retract latch
+        if (state > 4) {
+            if (!latchReset) {
+                extendLatch(-LATCH_PWR, 0);
+            }
+            else {
+                latchMotor.setPower(0);
+            }
+            if (latchValueReached) {
+                latchReset = true;
+            }
+        }
 
         //Use Switch statement to proceed through Autonomous strategy (only use even cases for steps)
         switch(state){
@@ -153,16 +167,16 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            /*case 12:
+            case 12:
                 stateName = "Extend Intake";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 extendIntake(0.9);
 
-                if (waitSec(0.7)) { //Use a boolean value that reads true when state goal is completed
+                if (waitSec(0.5)) { //Use a boolean value that reads true when state goal is completed
                     extendIntake(0);
                     state++;
                 }
-                break;*/
+                break;
 
             case 14:
                 stateName = "Drop Marker - Rotate intake down";
@@ -303,7 +317,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                     driveTrain.moveForward(-0.90, -1.2);
                 }
                 else {
-                    driveTrain.moveForward(0.90, 0.8);
+                    driveTrain.moveForward(0.90, 1.0);
                 }
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -331,6 +345,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 double targetTime = (goldPosition == LEFT)? 3 : 3.5;
                 driveTrain.moveForward(-0.9);
                 extendIntake(waitSec(1) ? 0 : 0.4);
+                setTiltServos(TILT_SCORE);
 
 
                 if (waitSec(targetTime)) { //Use a boolean value that reads true when state goal is completed
