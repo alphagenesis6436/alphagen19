@@ -51,7 +51,7 @@ public class SquirtleOp extends OpMode {
 
     //Declare any variables & constants pertaining to Scoring
     final double CUBE_PWR_MAX = 0.5;
-    final double BALL_PWR_MAX = 0.5;
+    final double BALL_PWR_MAX = 0.4;
     double currentScoringPwr = 0.0;
     int scoringState = 0;
     final double COUNTS_PER_REV = 1120;

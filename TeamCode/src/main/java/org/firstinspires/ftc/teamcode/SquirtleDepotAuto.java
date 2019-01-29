@@ -158,7 +158,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(-0.9, -0.52);
+                driveTrain.moveForward(-0.9, -0.4);
                 extendIntake(0.9);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
@@ -172,7 +172,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 extendIntake(0.9);
 
-                if (waitSec(0.5)) { //Use a boolean value that reads true when state goal is completed
+                if (waitSec(1.2)) { //Use a boolean value that reads true when state goal is completed
                     extendIntake(0);
                     state++;
                 }
@@ -183,7 +183,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 extendIntake(0);
                 if (waitSec(0.55)) {
-                    intakeMotor.setPower(0.70);
+                    intakeMotor.setPower(0.90);
                 }
                 setTiltServos(TILT_MIN);
 
@@ -209,9 +209,9 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateName = "Retract Intake";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 extendIntake(-0.4);
-                driveTrain.moveForward(0.9, 0.15); //AND back up
+                driveTrain.moveForward(0.9, 0.30); //AND back up
 
-                if (waitSec(0.95)) { //Use a boolean value that reads true when state goal is completed
+                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
                     extendIntake(0);
                     state++;
                 }
@@ -301,7 +301,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                     driveTrain.moveForward(0.90, 1.0);
                 }
                 else {
-                    driveTrain.moveForward(-0.90, -0.6);
+                    driveTrain.moveForward(-0.90, -0.9);
                 }
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -317,7 +317,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                     driveTrain.moveForward(-0.90, -1.2);
                 }
                 else {
-                    driveTrain.moveForward(0.90, 1.0);
+                    driveTrain.moveForward(0.90, 0.6);
                 }
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -329,7 +329,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateName = "Turn to have phone face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwisePID(-90);
+                driveTrain.turnClockwisePID(-95);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();

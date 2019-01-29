@@ -158,7 +158,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(-0.9, -0.52);
+                driveTrain.moveForward(-0.9, -0.30);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -202,7 +202,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
                 if (goldPosition == RIGHT) {
-                    driveTrain.moveForward(0.90, 2.00);
+                    driveTrain.moveForward(0.90, 2.1);
                 }
                 else {
                     driveTrain.moveForward(0, 0);
@@ -233,7 +233,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(-0.9, -0.5);
+                driveTrain.moveForward(0.9, 0.25);
                 setTiltServos(TILT_MIN);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
@@ -260,7 +260,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateName = "Park in Crater - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                setTiltServos(TILT_MAX);
+                setTiltServos(TILT_SCORE - 0.20);
                 driveTrain.moveForward(-0.90, -0.75);
                 extendIntake(0.4);
                 if (driveTrain.encoderTargetReached) {
