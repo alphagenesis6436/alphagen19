@@ -172,7 +172,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 extendIntake(0.9);
 
-                if (waitSec(1.2)) { //Use a boolean value that reads true when state goal is completed
+                if (waitSec(1.5)) { //Use a boolean value that reads true when state goal is completed
                     extendIntake(0);
                     state++;
                 }
@@ -208,7 +208,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 18:
                 stateName = "Retract Intake";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendIntake(-0.4);
+                extendIntake(-0.8);
                 driveTrain.moveForward(0.9, 0.30); //AND back up
 
                 if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
@@ -245,7 +245,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateName = "Scan for Gold Mineral - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.moveForward(-0.25, -1.5);
+                driveTrain.moveForward(-0.25, -1.75);
 
                 if (goldAligned()) { //if gold found, then it's either center or left position
                     driveTrain.stopDriveMotors();

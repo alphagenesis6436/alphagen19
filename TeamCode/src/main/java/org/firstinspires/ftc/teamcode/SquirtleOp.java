@@ -50,15 +50,15 @@ public class SquirtleOp extends OpMode {
     Servo tiltServo2; //180 Rev Servo, right side
 
     //Declare any variables & constants pertaining to Scoring
-    final double CUBE_PWR_MAX = 0.5;
-    final double BALL_PWR_MAX = 0.4;
+    final double CUBE_PWR_MAX = 0.45;
+    final double BALL_PWR_MAX = 0.35;
     double currentScoringPwr = 0.0;
     int scoringState = 0;
     final double COUNTS_PER_REV = 1120;
 
 
     //Declare any variables & constants pertaining to Intake
-    final double INTAKE_PWR_MAX = 0.5;
+    final double INTAKE_PWR_MAX = 0.90;
     double currentIntakePwr = 0;
     final double TILT_MIN = 0.0; //Intake is Down
     final double TILT_SCORE = 0.45; //Intake ready to score
@@ -69,7 +69,7 @@ public class SquirtleOp extends OpMode {
     boolean tiltDown = false;
 
     //Declare any variables & constants pertaining to Drive Train
-    final double DRIVE_PWR_MAX = 0.90;
+    final double DRIVE_PWR_MAX = 0.95;
 
     //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.95;
@@ -197,7 +197,7 @@ public class SquirtleOp extends OpMode {
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
         //telemetryDriveTrain();
-        //telemetryIntake();
+        telemetryIntake();
         //telemetryExtender();
         //telemetryScoring();
         telemetryLatch();
