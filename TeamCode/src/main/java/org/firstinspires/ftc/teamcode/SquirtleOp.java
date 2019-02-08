@@ -5,6 +5,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +105,25 @@ public class SquirtleOp extends OpMode {
     //Detector object
     GoldAlignDetector detector;
 
+    //Sound Effects
+    private String soundPath = "/FIRST/blocks/sounds";
+    private File bandFile   = new File("/sdcard" + soundPath + "/band.mp3");
+    private File marchFile = new File("/sdcard" + soundPath + "/march.mp3");
+    private File weowFile = new File("/sdcard" + soundPath + "/WEOW.mp3");
+    boolean bandFound;
+    boolean marchFound;
+    boolean weowFound;
+
+    private boolean isUp = false;    // Gamepad button state variables
+    private boolean isDown = false;
+    private boolean isLeft = false;
+    private boolean isRight = false;
+
+    private boolean wasUp = false;   // Gamepad button history variables
+    private boolean wasDown = false;
+    private boolean wasLeft = false;
+    private boolean wasRight = false;
+
 
     public SquirtleOp() {}
 
@@ -133,6 +154,16 @@ public class SquirtleOp extends OpMode {
         extenderMotor2 = hardwareMap.dcMotor.get("em2");
         extenderMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
         telemetry.addData(">", "Extender Initialization Successful");
+
+        // Make sure that the sound files exist on the phone
+        bandFound   = bandFile.exists();
+        marchFound = marchFile.exists();
+        weowFound = weowFile.exists();
+
+        // Display sound status
+        telemetry.addData("band sound",   bandFound ?   "Found" : "NOT Found \nCopy band.mp3 to " + soundPath  );
+        telemetry.addData("march sound", marchFound ? "Found" : "NOT Found \nCopy march.mp3 to " + soundPath );
+        telemetry.addData("WEOW sound", weowFound ? "Found" : "NOT Found \nCopy weow.mp3 to " + soundPath );
 
         //driveTrain.initializeIMU();
         //initializeDogeforia();
@@ -242,6 +273,35 @@ public class SquirtleOp extends OpMode {
         updateLatch();
         updateIntake();
         updateScoring();
+        updateSounds();
+    }
+
+    void updateSounds() {
+        // play catina band each time gamepad up is pressed (This sound is a resource)
+        if (bandFound && (isUp = gamepad1.dpad_up) && !wasUp) {
+            SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, bandFile);
+            telemetry.addData("Playing", "Catina Band");
+            telemetry.update();
+        }
+
+        // play imperial march each time gamepad right is pressed  (This sound is a resource)
+        if (marchFound && (isRight = gamepad1.dpad_right) && !wasRight) {
+            SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, marchFile);
+            telemetry.addData("Playing", "Imperial March");
+            telemetry.update();
+        }
+
+        // play weow each time gamepad right is pressed  (This sound is a resource)
+        if (weowFound && (isLeft = gamepad1.dpad_left) && !wasLeft) {
+            SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, weowFile);
+            telemetry.addData("Playing", "WEEOOOOWWW");
+            telemetry.update();
+        }
+
+        // Save last button states
+        wasUp = isUp;
+        wasRight = isRight;
+        wasLeft = isLeft;
     }
 
     void updateScoring() {
