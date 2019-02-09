@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -55,6 +56,25 @@ public class SquirtleDepotAuto extends SquirtleOp {
         initializeDogeforia();
         telemetry.addData(">", "Vuforia Initialization Successful");
 
+        // Make sure that the sound files exist on the phone
+        bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
+        marchSoundID   = hardwareMap.appContext.getResources().getIdentifier("march",   "raw", hardwareMap.appContext.getPackageName());
+        weowSoundID   = hardwareMap.appContext.getResources().getIdentifier("weow",   "raw", hardwareMap.appContext.getPackageName());
+        // Determine if sound resources are found.
+        // Note: Preloading is NOT required, but it's a good way to verify all your sounds are available before you run.
+        if (bandSoundID != 0)
+            bandFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, bandSoundID);
+
+        if (marchSoundID != 0)
+            marchFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, marchSoundID);
+        if (weowSoundID != 0)
+            weowFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, weowSoundID);
+
+        // Display sound status
+        telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
+        telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
+        telemetry.addData("WEOW sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
+
         telemetry.addData(">", "Press Start to continue");
     }
 
@@ -108,7 +128,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 2:
                 stateName = "Lower Robot to Ground - Latch Pwr Up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendLatch(LATCH_PWR, 19.3);
+                extendLatch(LATCH_PWR, 18.9);
 
                 if (latchValueReached) { //Use a boolean value that reads true when state goal is completed
                     latchMotor.setPower(0);
@@ -124,6 +144,8 @@ public class SquirtleDepotAuto extends SquirtleOp {
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
+                    SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, weowSoundID);
+                    telemetry.addData("Playing", "WEEOOOOWWW");
                     state++;
                 }
                 break;
@@ -133,7 +155,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(-0.9, -1);
+                driveTrain.moveForward(-0.9, -1.1);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -172,7 +194,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 extendIntake(0.9);
 
-                if (waitSec(1.5)) { //Use a boolean value that reads true when state goal is completed
+                if (waitSec(1.1)) { //Use a boolean value that reads true when state goal is completed
                     extendIntake(0);
                     state++;
                 }
@@ -197,7 +219,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateName = "Rotate intake up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 setTiltServos(TILT_MAX);
-                extendIntake(-0.9);
+                extendIntake(-0.4);
 
                 if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
                     intakeMotor.setPower(0);

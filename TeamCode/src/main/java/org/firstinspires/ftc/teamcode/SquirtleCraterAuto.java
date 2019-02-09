@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -55,6 +56,25 @@ public class SquirtleCraterAuto extends SquirtleOp {
         initializeDogeforia();
         telemetry.addData(">", "Vuforia Initialization Successful");
 
+        // Make sure that the sound files exist on the phone
+        bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
+        marchSoundID   = hardwareMap.appContext.getResources().getIdentifier("march",   "raw", hardwareMap.appContext.getPackageName());
+        weowSoundID   = hardwareMap.appContext.getResources().getIdentifier("weow",   "raw", hardwareMap.appContext.getPackageName());
+        // Determine if sound resources are found.
+        // Note: Preloading is NOT required, but it's a good way to verify all your sounds are available before you run.
+        if (bandSoundID != 0)
+            bandFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, bandSoundID);
+
+        if (marchSoundID != 0)
+            marchFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, marchSoundID);
+        if (weowSoundID != 0)
+            weowFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, weowSoundID);
+
+        // Display sound status
+        telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
+        telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
+        telemetry.addData("WEOW sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
+
         telemetry.addData(">", "Press Start to continue");
     }
 
@@ -108,7 +128,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
             case 2:
                 stateName = "Lower Robot to Ground - Latch Pwr Up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendLatch(LATCH_PWR, 19.3);
+                extendLatch(LATCH_PWR, 18.7);
 
                 if (latchValueReached) { //Use a boolean value that reads true when state goal is completed
                     latchMotor.setPower(0);
@@ -124,6 +144,8 @@ public class SquirtleCraterAuto extends SquirtleOp {
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
+                    SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, weowSoundID);
+                    telemetry.addData("Playing", "WEEOOOOWWW");
                     state++;
                 }
                 break;
@@ -145,7 +167,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateName = "Turn to original angle";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwisePID(0);
+                driveTrain.turnClockwise(0);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -158,7 +180,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(-0.9, -0.30);
+                driveTrain.moveForward(-0.9, -0.25);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -170,7 +192,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateName = "Turn to have phone face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwisePID(-90);
+                driveTrain.turnClockwise(-90);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -182,11 +204,11 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateName = "Scan for Gold Mineral - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.moveForward(-0.25, -1.5);
+                driveTrain.moveForward(-0.25, -1.75);
 
                 if (goldAligned()) { //if gold found, then it's either center or left position
                     driveTrain.stopDriveMotors();
-                    goldPosition = (Math.abs(driveTrain.getRevolutionsDriven()) <= 1) ? CENTER : LEFT;
+                    goldPosition = (Math.abs(driveTrain.getRevolutionsDriven()) <= 0.75) ? CENTER : LEFT;
                     state += 3; //skip alignment step for gold in right position
                 }
                 else if (driveTrain.encoderTargetReached) { //if gold not found within 1.5 revolutions, then cube is right position
@@ -202,7 +224,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
                 if (goldPosition == RIGHT) {
-                    driveTrain.moveForward(0.90, 2.1);
+                    driveTrain.moveForward(0.90, 2.55);
                 }
                 else {
                     driveTrain.moveForward(0, 0);
@@ -220,7 +242,13 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateName = "Turn to have front of robot face sampling field - Turn 90 cw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwisePID(0);
+
+                if (goldPosition == CENTER) {
+                    driveTrain.turnClockwise(-5);
+                }
+                else {
+                    driveTrain.turnClockwise(0);
+                }
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -233,7 +261,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
 
-                driveTrain.moveForward(0.9, 0.25);
+                driveTrain.moveForward(0.9, 0.45);
                 setTiltServos(TILT_MIN);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
@@ -246,7 +274,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateName = "Knock off cube - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.moveForward(-0.90, -1.1);
+                driveTrain.moveForward(-0.90, -1.3);
                 intakeMotor.setPower(-0.50);
 
                 if (driveTrain.encoderTargetReached) {
@@ -262,9 +290,10 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 driveTrain.runConstantSpeed();
                 setTiltServos(TILT_SCORE - 0.20);
                 driveTrain.moveForward(-0.90, -0.75);
-                extendIntake(0.4);
+                extendIntake(0.2);
                 if (driveTrain.encoderTargetReached) {
                     extendIntake(0);
+                    setTiltServos(TILT_MIN + 0.03);
                     driveTrain.stopDriveMotors();
                     state++;
                 }
