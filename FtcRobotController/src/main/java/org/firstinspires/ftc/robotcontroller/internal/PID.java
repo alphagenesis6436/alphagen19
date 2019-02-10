@@ -20,7 +20,7 @@ public class PID {
     public PID() {}
 
 
-    private double kp = 0.010; //proportionality constant (amount to adjust for immediate deviance) must be experimentally found
+    private double kp = 0.012; //proportionality constant (amount to adjust for immediate deviance) must be experimentally found (was 0.010 before 2/10/19)
     private double ki = 0.001; //integral constant (amount to adjust for past errors) must be experimentally found
     private double kd = 0.0022; //derivative constant (amount to adjust for future errors) must be experimentally found
     private double targetValue = 0;

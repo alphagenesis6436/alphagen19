@@ -648,7 +648,7 @@ public class DriveTrain {
     public void turnClockwise(int targetAngle) {
         updateAngles();
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
-        double k = 0.005; //experimentally found
+        double k = 0.007; //experimentally found (was 0.005 before 2/10/19)
         double e = targetAngle + angles.firstAngle; //clockwise is negative for firstAngle
         double power = (0.05 * e / Math.abs(e)) + k * e;
         power = Range.clip(power, -1.0, 1.0);
