@@ -101,7 +101,17 @@ public class OpModeTemplate extends OpMode {
 
     double setTime; //used to measure the time period of each step in autonomous
     int state = 0; //used to control the steps taken during autonomous
-    String stateName = ""; //Overwrite this as the specific step used in Autonomous
+    String stateGoal = ""; //Overwrite this as the specific step used in Autonomous
+
+    void advanceState() {
+        state++;
+        setTime = this.time;
+    }
+
+    void advanceState(int skipState) {
+        state += (skipState * 2) + 1;
+        setTime = this.time;
+    }
 
     void resetEncoders() {
 
