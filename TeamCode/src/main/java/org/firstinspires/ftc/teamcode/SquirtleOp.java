@@ -528,7 +528,24 @@ public class SquirtleOp extends OpMode {
 
     double setTime; //used to measure the time period of each step in autonomous
     int state = 0; //used to control the steps taken during autonomous
-    String stateName = ""; //Overwrite this as the specific step used in Autonomous
+    String stateGoal = ""; //Overwrite this as the specific step used in Autonomous
+    double kp = 0.012; //proportionality constant (amount to adjust for immediate deviance) must be experimentally found
+    double ki = 0.001; //integral constant (amount to adjust for past errors) must be experimentally found
+    double kd = 0.0022; //derivative constant (amount to adjust for future errors) must be experimentally found
+
+    void advanceState() {
+        state++;
+        setTime = this.time;
+    }
+
+    void advanceState(int skipState) {
+        state += (skipState * 2) + 1;
+        setTime = this.time;
+    }
+
+    void setAnglePIDConstants() {
+        driveTrain.anglePID.setConstants(kp, ki, kd);
+    }
 
     void resetEncoders() {
         driveTrain.resetEncoders();
@@ -539,13 +556,22 @@ public class SquirtleOp extends OpMode {
         latchValueReached = false;
         extenderValueReached = false;
     }
+    void calibrateHardwareDevices() {
+        tiltServo1.setPosition(TILT_START_POS);
+        tiltServo2.setPosition(TILT_START_POS);
+        scoringMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        scoringMotor.setPower(0);
+        latchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        latchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setAnglePIDConstants();
+    }
     //used to measure the amount of time passed since a new step in autonomous has started
     boolean waitSec(double elapsedTime) { return (this.time - setTime >= elapsedTime); }
 
     boolean goldAligned() {
         boolean isAligned = false;
         int centerValue = 275;
-        int uncertainty = 25;
+        int uncertainty = 30; //was 25 before 2/11/2019
         if (Math.abs(detector.getXPosition() - centerValue) <= uncertainty)
             isAligned = true;
         return isAligned;

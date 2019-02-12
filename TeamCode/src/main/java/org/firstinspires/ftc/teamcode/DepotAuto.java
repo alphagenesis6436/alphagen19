@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcontroller.internal.OpModeTemplate;
-
 import static org.firstinspires.ftc.teamcode.GoldPosition.*;
 
 /**
@@ -71,7 +69,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
                 break;
 
             /*case 2:
-                stateName = "Lower Robot to Ground - Latch Pwr Up";
+                stateGoal = "Lower Robot to Ground - Latch Pwr Up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 latchMotor.setPower(LATCH_PWR);
 
@@ -98,7 +96,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
                 stateName = "Turn to have phone face sampling field - Turn 90 cw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwise(90);
+                driveTrain.turnAbsolute(90);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -161,7 +159,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
                 stateName = "Turn to have front of robot face sampling field - Turn 90 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnClockwise(0);
+                driveTrain.turnAbsolute(0);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -200,7 +198,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
                     case LEFT: targetAngle = 45;
                         break;
                 }
-                driveTrain.turnClockwise(targetAngle);
+                driveTrain.turnAbsolute(targetAngle);
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     state = 1000;
@@ -234,7 +232,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
             case 18:
                 stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnClockwise(135);
+                driveTrain.turnAbsolute(135);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();

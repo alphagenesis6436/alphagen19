@@ -27,13 +27,14 @@ import com.qualcomm.robotcore.util.Range;
  *      Position Range: [0, 1]
  *      180 Degree HiTechnic Servos
  *          0 is fully clockwise
- *          1 is fully clockwise
+ *          1 is fully counter clockwise
  *          Most Servos we have are broken and cannot operate in the full range
  *      360 Degree (Continuous) HiTechnic Servos
  *          0 is max speed in clockwise direction
  *          0.5 is speed = 0, servo stops
  *          1 is max speed in counterclockwise direction
  *      Rev Servos
+ *          Can act as either 180 Degree Servo or 360 Degree
  *
  *
  */

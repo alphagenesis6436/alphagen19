@@ -367,7 +367,9 @@ public class DriveTrain {
     //Class variables for Autonomous Use
     private BNO055IMU imu; //For detecting rotation
     private Orientation angles;
-    private PID anglePID = new PID();
+    public PID anglePID = new PID();
+    private int currentAngle = 0;
+    public double turningConstant = 0.007;
     private boolean disableEncoderCalibration = false;
     public boolean encoderTargetReached = false;
     public boolean angleTargetReached = false;
@@ -479,7 +481,7 @@ public class DriveTrain {
         double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION_40;
         double error = target - frontLeft.getCurrentPosition();
         if (!encoderTargetReached) {
-            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 4) {
+            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 2) {
                 speed = (0.10 * error / Math.abs(error)) + (error * kp);
             }
             moveForward(speed);
@@ -645,22 +647,38 @@ public class DriveTrain {
                 break;
         }
     }
-    public void turnClockwise(int targetAngle) {
+    public void turnAbsolute(int targetAngle) {
         updateAngles();
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
-        double k = 0.007; //experimentally found (was 0.005 before 2/10/19)
         double e = targetAngle + angles.firstAngle; //clockwise is negative for firstAngle
-        double power = (0.05 * e / Math.abs(e)) + k * e;
+        double power = (0.05 * e / Math.abs(e)) + turningConstant * e;
         power = Range.clip(power, -1.0, 1.0);
         if (Math.abs(e) >= 2)
             turnClockwise(power);
         else {
             stopDriveMotors();
+            currentAngle = targetAngle;
             angleTargetReached = true;
         }
     }
 
-    public void turnClockwisePID(int targetAngle) {
+    public void turnRelative(int targetAngleDisplacement) {
+        int targetAngle = currentAngle + targetAngleDisplacement;
+        updateAngles();
+        telemetry.addData("Heading", String.format("%.0f", getHeading()));
+        double e = targetAngle + angles.firstAngle; //clockwise is negative for firstAngle
+        double power = (0.05 * e / Math.abs(e)) + turningConstant * e;
+        power = Range.clip(power, -1.0, 1.0);
+        if (Math.abs(e) >= 2)
+            turnClockwise(power);
+        else {
+            stopDriveMotors();
+            currentAngle = targetAngleDisplacement;
+            angleTargetReached = true;
+        }
+    }
+
+    public void turnAbsolutePID(int targetAngle) {
         updateAngles();
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
         anglePID.setTargetValue(targetAngle);
@@ -672,6 +690,26 @@ public class DriveTrain {
         else {
             stopDriveMotors();
             anglePID.reset();
+            currentAngle = targetAngle;
+            angleTargetReached = true;
+        }
+
+    }
+
+    public void turnRelativePID(int targetAngleDisplacement) {
+        int targetAngle = currentAngle + targetAngleDisplacement;
+        updateAngles();
+        telemetry.addData("Heading", String.format("%.0f", getHeading()));
+        anglePID.setTargetValue(targetAngle);
+        anglePID.update(-angles.firstAngle, getRuntime());
+        double power = anglePID.adjustmentValue();
+        power = Range.clip(power, -1, 1); //ensure power doesn't exceed max speed
+        if (Math.abs(anglePID.getError()) >= 3) //3 degree angle slack / uncertainty
+            turnClockwise(power);
+        else {
+            stopDriveMotors();
+            anglePID.reset();
+            currentAngle = targetAngle;
             angleTargetReached = true;
         }
 

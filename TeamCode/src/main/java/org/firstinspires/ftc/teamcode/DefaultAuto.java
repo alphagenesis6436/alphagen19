@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcontroller.internal.DeathBoxOp;
-
 /**
  * Updated by Alex on 11/5/2017.
  */
@@ -82,7 +80,7 @@ public class DefaultAuto extends WoBuZhiDaoOp {
             case 4:
                 stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnClockwise(135);
+                driveTrain.turnAbsolute(135);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -126,7 +124,7 @@ public class DefaultAuto extends WoBuZhiDaoOp {
             case 12:
                 stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnClockwise(100);
+                driveTrain.turnAbsolute(100);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -148,7 +146,7 @@ public class DefaultAuto extends WoBuZhiDaoOp {
             case 16:
                 stateName = "Rotate 135 degrees clockwise to be parallel with the walls";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnClockwise(135);
+                driveTrain.turnAbsolute(135);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();

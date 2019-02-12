@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -12,17 +13,17 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.NOT_FOUND;
 import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
 
 /**
- * Updated by Alex on 2/11/2019.
+ * Updated by Alex on 2/10/2019.
  */
-@Autonomous(name = "SquirtleCraterAuto", group = "default")
-//@Disabled
-public class SquirtleCraterAuto extends SquirtleOp {
+@Autonomous(name = "SquirtleCraterOldAuto", group = "default")
+@Disabled
+public class SquirtleCraterOldAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
     String goldPos = "NOT FOUND";
     boolean latchReset = false;
 
-    public SquirtleCraterAuto() {}
+    public SquirtleCraterOldAuto() {}
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -81,7 +82,8 @@ public class SquirtleCraterAuto extends SquirtleOp {
     @Override
     public void loop(){
         //Display Data to be displayed throughout entire Autonomous
-        telemetry.addData("" + state, stateGoal);
+        telemetry.addData(stateGoal, state);
+        telemetry.addData("current time", String.format("%.1f", this.time));
         telemetry.addData("state time", String.format("%.1f", this.time - setTime));
         telemetry.addData("Gold Position", goldPos);
         switch (goldPosition) {
@@ -113,7 +115,12 @@ public class SquirtleCraterAuto extends SquirtleOp {
         switch(state){
             case 0: //Use this state to reset all hardware devices
                 stateGoal = "Initial Calibration";
-                calibrateHardwareDevices();
+                tiltServo1.setPosition(TILT_START_POS);
+                tiltServo2.setPosition(TILT_START_POS);
+                scoringMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                scoringMotor.setPower(0);
+                latchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                latchMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 calibrateAutoVariables();
                 resetEncoders();
                 state++;
@@ -134,7 +141,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateGoal = "Turn to have hook unlatch - Turn 15 cw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnRelativePID(15);
+                driveTrain.turnAbsolute(15);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -161,7 +168,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateGoal = "Turn to original angle";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                driveTrain.turnAbsolutePID(0);
+                driveTrain.turnAbsolute(0);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
