@@ -175,7 +175,7 @@ public class SquirtleOp extends OpMode {
         telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
         telemetry.addData("WEOW sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
 
-        //driveTrain.initializeIMU();
+        driveTrain.initializeIMU();
         //initializeDogeforia();
         //telemetry.addData(">", "Vuforia Initialization Successful");
 
@@ -237,7 +237,7 @@ public class SquirtleOp extends OpMode {
 
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
-        //telemetryDriveTrain();
+        telemetryDriveTrain();
         telemetryIntake();
         //telemetryExtender();
         //telemetryScoring();
@@ -246,27 +246,26 @@ public class SquirtleOp extends OpMode {
 
     void telemetryScoring() {
         telemetry.addData("SCORING", "TELEMETRY");
-        telemetry.addData("Scoring Pwr", scoringMotor.getPower());
+        telemetry.addData("Scoring Pwr", String.format("%.2f", scoringMotor.getPower()));
         telemetry.addLine();
     }
 
     void telemetryExtender() {
         telemetry.addData("EXTENDER", "TELEMETRY");
-        telemetry.addData("Extender Pwr", extenderMotor1.getPower());
+        telemetry.addData("Extender Pwr", String.format("%.2f", extenderMotor1.getPower()));
         telemetry.addLine();
     }
 
     void telemetryIntake() {
         telemetry.addData("INTAKE", "TELEMETRY");
-        telemetry.addData(">>>Intake Pwr", intakeMotor.getPower());
-        telemetry.addData(">>>Tilt1 Pos", tiltServo1.getPosition());
-        telemetry.addData(">>>Tilt2 Pos", tiltServo2.getPosition());
+        telemetry.addData(">>>Intake Pwr", String.format("%.2f", intakeMotor.getPower()));
+        telemetry.addData(">>>Tilt Pos", String.format("%.2f", tiltServo1.getPosition()));
         telemetry.addLine();
     }
 
     void telemetryLatch() {
         telemetry.addData("LATCH", "TELEMETRY");
-        telemetry.addData("Latch Pwr", latchMotor.getPower());
+        telemetry.addData("Latch Pwr", String.format("%.2f", latchMotor.getPower()));
         telemetry.addData("Latch Enc", String.format("%.3f", latchMotor.getCurrentPosition() / COUNTS_PER_REV));
         telemetry.addLine();
     }

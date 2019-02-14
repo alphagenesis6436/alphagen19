@@ -156,6 +156,10 @@ public class DriveTrain {
                 case HOLONOMIC: updateHolonomicDrive();
                     break;
             }
+            if (gamepad.dpad_down) {
+                resetEncoders();
+                runConstantPower();
+            }
         }
         else {
             if (telemetry != null) telemetry.addData("Error", "Need to Initialize Gamepad");
@@ -323,11 +327,13 @@ public class DriveTrain {
                     telemetry.addData("TANK DRIVE", "TELEMETRY");
                     telemetry.addData(">>>Left Pwr", frontLeft.getPower());
                     telemetry.addData(">>>Right Pwr", frontRight.getPower());
+                    telemetry.addData(">>>Drive Encoder", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
                     break;
                 case ARCADE:
                     telemetry.addData("ARCADE DRIVE", "TELEMETRY");
                     telemetry.addData(">>>Left Pwr", frontLeft.getPower());
                     telemetry.addData(">>>Right Pwr", frontRight.getPower());
+                    telemetry.addData(">>>Drive Encoder", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
                     break;
                 case SLIDE:
                     telemetry.addData("SLIDE DRIVE", "TELEMETRY");
@@ -358,6 +364,8 @@ public class DriveTrain {
                     telemetry.addData(">>>Back Right Pwr", backRight.getPower());
                     break;
             }
+            updateAngles();
+            telemetry.addData(">>>Heading", -angles.firstAngle + " degrees");
             telemetry.addLine();
         }
 
