@@ -47,7 +47,7 @@ public class DriveTrain {
     //Class variables for TeleOp Use
     private DriveMode driveMode;
     private int numOfMotors; //Only 2 and 4 are accepted values
-    private boolean frontModeOn = true; //flips the front and back of robot for ARCADE & TANK
+    private boolean frontModeOn = false; //flips the front and back of robot for ARCADE & TANK
     private double drivePwrMax = 0.80; //80% by default
     private double turnPwrMax = 0.60; //60% by default, only for slide/mecanum/holonomic
     private double gearRatio = 1; //Driven / Driver, 1 by default

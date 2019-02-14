@@ -122,7 +122,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 2:
                 stateGoal = "Lower Robot to Ground - Latch Pwr Up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendLatch(LATCH_PWR, 19.4);
+                extendLatch(LATCH_PWR, LATCH_HEIGHT);
 
                 if (latchValueReached) { //Use a boolean value that reads true when state goal is completed
                     latchMotor.setPower(0);

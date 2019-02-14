@@ -52,7 +52,7 @@ public class SquirtleOp extends OpMode {
     Servo tiltServo2; //180 Rev Servo, right side
 
     //Declare any variables & constants pertaining to Scoring
-    final double CUBE_PWR_MAX = 0.375;
+    final double CUBE_PWR_MAX = 0.395;
     final double BALL_PWR_MAX = 0.35;
     double currentScoringPwr = 0.0;
     int scoringState = 0;
@@ -75,6 +75,7 @@ public class SquirtleOp extends OpMode {
 
     //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.95;
+    final double LATCH_HEIGHT = 12.77;
     double currentLatchPwr = 0.0;
     boolean latchIsRunning = false;
     boolean latchExtending = false;
@@ -359,7 +360,7 @@ public class SquirtleOp extends OpMode {
         }
         else {
             if (latchExtending) {
-                extendLatch(LATCH_PWR, 19.3);
+                extendLatch(LATCH_PWR, LATCH_HEIGHT);
             }
             if (latchRetracting) {
                 extendLatch(-LATCH_PWR, 0);
