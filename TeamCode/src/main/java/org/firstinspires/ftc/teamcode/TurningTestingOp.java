@@ -6,6 +6,7 @@ import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
 import com.qualcomm.ftccommon.SoundPlayer;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,9 +39,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 
-@TeleOp(name = "SquirtleOp", group = "Default")
-//@Disabled
-public class SquirtleOp extends OpMode {
+@TeleOp(name = "TurningTestingOp", group = "Default")
+@Disabled
+public class TurningTestingOp extends OpMode {
     //Declare any motors, servos, and sensors
     DriveTrain driveTrain = new DriveTrain(DriveMode.ARCADE, 2);
     DcMotor latchMotor; //40:1 AndyMark //encoder
@@ -52,8 +53,8 @@ public class SquirtleOp extends OpMode {
     Servo tiltServo2; //180 Rev Servo, right side
 
     //Declare any variables & constants pertaining to Scoring
-    final double CUBE_PWR_MAX = 0.395;
-    final double BALL_PWR_MAX = 0.33;
+    final double CUBE_PWR_MAX = 0.375;
+    final double BALL_PWR_MAX = 0.35;
     double currentScoringPwr = 0.0;
     int scoringState = 0;
     final double COUNTS_PER_REV = 1120;
@@ -64,10 +65,10 @@ public class SquirtleOp extends OpMode {
     double currentIntakePwr = 0;
     final double TILT_MIN = 0.02; //Intake is Down
     final double TILT_SCORE = 0.45; //Intake ready to score
-    final double TILT_MAX = 0.74; //Intake is Up
+    final double TILT_MAX = 0.54; //Intake is Up
     final double TILT_START_POS = TILT_MAX;
     double currentTiltPos = TILT_START_POS;
-    double tiltDelta = 0.03;
+    double tiltDelta = 0.01;
     boolean tiltDown = false;
 
     //Declare any variables & constants pertaining to Drive Train
@@ -75,7 +76,6 @@ public class SquirtleOp extends OpMode {
 
     //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.95;
-    final double LATCH_HEIGHT = 12.77;
     double currentLatchPwr = 0.0;
     boolean latchIsRunning = false;
     boolean latchExtending = false;
@@ -126,7 +126,7 @@ public class SquirtleOp extends OpMode {
     private boolean wasRight = false;
 
 
-    public SquirtleOp() {}
+    public TurningTestingOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -157,7 +157,7 @@ public class SquirtleOp extends OpMode {
         telemetry.addData(">", "Extender Initialization Successful");
 
         // Make sure that the sound files exist on the phone
-        /*bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
+        bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
         marchSoundID   = hardwareMap.appContext.getResources().getIdentifier("march",   "raw", hardwareMap.appContext.getPackageName());
         weowSoundID   = hardwareMap.appContext.getResources().getIdentifier("weow",   "raw", hardwareMap.appContext.getPackageName());
         // Determine if sound resources are found.
@@ -167,15 +167,15 @@ public class SquirtleOp extends OpMode {
 
         if (marchSoundID != 0)
             marchFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, marchSoundID);
-        if (weowSoundID != 0)
-            weowFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, weowSoundID);
+        //if (weowSoundID != 0)
+            //weowFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, weowSoundID);
 
         // Display sound status
         telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
         telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
         telemetry.addData("weow sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
-*/
-        driveTrain.initializeIMU();
+
+        //driveTrain.initializeIMU();
         //initializeDogeforia();
         //telemetry.addData(">", "Vuforia Initialization Successful");
 
@@ -237,7 +237,7 @@ public class SquirtleOp extends OpMode {
 
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
-        telemetryDriveTrain();
+        //telemetryDriveTrain();
         telemetryIntake();
         //telemetryExtender();
         //telemetryScoring();
@@ -246,26 +246,27 @@ public class SquirtleOp extends OpMode {
 
     void telemetryScoring() {
         telemetry.addData("SCORING", "TELEMETRY");
-        telemetry.addData("Scoring Pwr", String.format("%.2f", scoringMotor.getPower()));
+        telemetry.addData("Scoring Pwr", scoringMotor.getPower());
         telemetry.addLine();
     }
 
     void telemetryExtender() {
         telemetry.addData("EXTENDER", "TELEMETRY");
-        telemetry.addData("Extender Pwr", String.format("%.2f", extenderMotor1.getPower()));
+        telemetry.addData("Extender Pwr", extenderMotor1.getPower());
         telemetry.addLine();
     }
 
     void telemetryIntake() {
         telemetry.addData("INTAKE", "TELEMETRY");
-        telemetry.addData(">>>Intake Pwr", String.format("%.2f", intakeMotor.getPower()));
-        telemetry.addData(">>>Tilt Pos", String.format("%.2f", tiltServo1.getPosition()));
+        telemetry.addData(">>>Intake Pwr", intakeMotor.getPower());
+        telemetry.addData(">>>Tilt1 Pos", tiltServo1.getPosition());
+        telemetry.addData(">>>Tilt2 Pos", tiltServo2.getPosition());
         telemetry.addLine();
     }
 
     void telemetryLatch() {
         telemetry.addData("LATCH", "TELEMETRY");
-        telemetry.addData("Latch Pwr", String.format("%.2f", latchMotor.getPower()));
+        telemetry.addData("Latch Pwr", latchMotor.getPower());
         telemetry.addData("Latch Enc", String.format("%.3f", latchMotor.getCurrentPosition() / COUNTS_PER_REV));
         telemetry.addLine();
     }
@@ -359,7 +360,7 @@ public class SquirtleOp extends OpMode {
         }
         else {
             if (latchExtending) {
-                extendLatch(LATCH_PWR, LATCH_HEIGHT);
+                extendLatch(LATCH_PWR, 19.3);
             }
             if (latchRetracting) {
                 extendLatch(-LATCH_PWR, 0);
@@ -529,9 +530,9 @@ public class SquirtleOp extends OpMode {
     double setTime; //used to measure the time period of each step in autonomous
     int state = 0; //used to control the steps taken during autonomous
     String stateGoal = ""; //Overwrite this as the specific step used in Autonomous
-    double kp = 0.050; //proportionality constant (amount to adjust for immediate deviance) experimentally found to be 0.050 on 2/20/19
-    double ki = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be 0.001 on 2/20/19
-    double kd = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be 0.003 on 2/20/19
+    double kp = 0.012; //proportionality constant (amount to adjust for immediate deviance) must be experimentally found
+    double ki = 0.001; //integral constant (amount to adjust for past errors) must be experimentally found
+    double kd = 0.0022; //derivative constant (amount to adjust for future errors) must be experimentally found
 
     void advanceState() {
         state++;

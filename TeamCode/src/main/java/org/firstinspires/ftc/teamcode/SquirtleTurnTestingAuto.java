@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,7 +15,7 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
  * Updated by Alex on 2/14/2019.
  */
 @Autonomous(name = "SquirtleTurnTestingAuto", group = "default")
-//@Disabled
+@Disabled
 public class SquirtleTurnTestingAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
@@ -72,7 +73,7 @@ public class SquirtleTurnTestingAuto extends SquirtleOp {
         // Display sound status
         telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
         telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
-        telemetry.addData("WEOW sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
+        telemetry.addData("weow sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
 
         telemetry.addData(">", "Press Start to continue");
     }

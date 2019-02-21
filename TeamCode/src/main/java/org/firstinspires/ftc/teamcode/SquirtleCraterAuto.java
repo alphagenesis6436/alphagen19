@@ -57,7 +57,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
         telemetry.addData(">", "Vuforia Initialization Successful");
 
         // Make sure that the sound files exist on the phone
-        bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
+        /*bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
         marchSoundID   = hardwareMap.appContext.getResources().getIdentifier("march",   "raw", hardwareMap.appContext.getPackageName());
         weowSoundID   = hardwareMap.appContext.getResources().getIdentifier("weow",   "raw", hardwareMap.appContext.getPackageName());
         // Determine if sound resources are found.
@@ -73,8 +73,8 @@ public class SquirtleCraterAuto extends SquirtleOp {
         // Display sound status
         telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
         telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
-        telemetry.addData("WEOW sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
-
+        telemetry.addData("weow sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
+*/
         telemetry.addData(">", "Press Start to continue");
     }
 
