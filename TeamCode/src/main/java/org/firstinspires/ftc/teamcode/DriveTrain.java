@@ -376,6 +376,7 @@ public class DriveTrain {
     private BNO055IMU imu; //For detecting rotation
     private Orientation angles;
     public PID anglePID = new PID();
+    public PID revolutionPID = new PID();
     private int currentAngle = 0;
     public double turningConstant = 0.007;
     private boolean disableEncoderCalibration = false;
@@ -502,6 +503,24 @@ public class DriveTrain {
             telemetry.addData("Rotations left", String.format("%.2f", error / COUNTS_PER_REVOLUTION_40 / gearRatio));
         }
     }
+
+    public void moveForwardPID(double targetRevolutions) {
+        revolutionPID.setTargetValue(targetRevolutions);
+        double currentRevolutions = frontLeft.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio;
+        revolutionPID.update(currentRevolutions, getRuntime());
+        double power = revolutionPID.adjustmentValue();
+        power = Range.clip(power, -1, 1); //ensure power doesn't exceed max speed
+        if (Math.abs(revolutionPID.getError()) >= (0.125 / 4 / (2*Math.PI))) {//0.125 inch slack / uncertainty
+            turnClockwise(power);
+            telemetry.addData("Rotations left", String.format("%.2f", revolutionPID.getError()));
+        }
+        else {
+            stopDriveMotors();
+            revolutionPID.reset();
+            encoderTargetReached = true;
+        }
+    }
+
     public void moveRight(double power) {
         switch (encoderMode) {
             case CONSTANT_SPEED: runConstantSpeed();

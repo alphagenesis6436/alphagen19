@@ -462,9 +462,14 @@ public class SquirtleOp extends OpMode {
     double setTime; //used to measure the time period of each step in autonomous
     int state = 0; //used to control the steps taken during autonomous
     String stateGoal = ""; //Overwrite this as the specific step used in Autonomous
-    double kp = 0.050; //proportionality constant (amount to adjust for immediate deviance) experimentally found to be 0.050 on 2/20/19
-    double ki = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be 0.001 on 2/20/19
-    double kd = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be 0.003 on 2/20/19
+    //Turning PID Constants
+    double ap = 0.050; //proportionality constant (amount to adjust for immediate deviance) experimentally found to be 0.050 on 2/20/19
+    double ai = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be 0.001 on 2/20/19
+    double ad = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be 0.003 on 2/20/19
+    //Driving PID Constants
+    double rp = 0.050; //proportionality constant (amount to adjust for immediate deviance) experimentally found to be ---- on -/--/19
+    double ri = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be ---- on -/--/19
+    double rd = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be ---- on -/--/19
 
     void advanceState() {
         state++;
@@ -477,7 +482,10 @@ public class SquirtleOp extends OpMode {
     }
 
     void setAnglePIDConstants() {
-        driveTrain.anglePID.setConstants(kp, ki, kd);
+        driveTrain.anglePID.setConstants(ap, ai, ad);
+    }
+    void setRevolutionPIDConstants() {
+        driveTrain.revolutionPID.setConstants(rp, ri, rd);
     }
 
     void resetEncoders() {
