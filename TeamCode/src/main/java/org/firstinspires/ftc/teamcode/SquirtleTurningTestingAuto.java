@@ -14,13 +14,13 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
 /**
  * Updated by Alex on 2/11/2019.
  */
-@Autonomous(name = "TurningTestingAuto", group = "default")
+@Autonomous(name = "SquirtleTurningTestingAuto", group = "default")
 //@Disabled
-public class TurningTestingAuto extends SquirtleOp {
+public class SquirtleTurningTestingAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     double turningTime = 0;
 
-    public TurningTestingAuto() {}
+    public SquirtleTurningTestingAuto() {}
 
     @Override
     public void loop(){

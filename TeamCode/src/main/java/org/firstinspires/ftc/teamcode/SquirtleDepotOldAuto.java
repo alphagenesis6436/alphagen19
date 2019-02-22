@@ -57,25 +57,6 @@ public class SquirtleDepotOldAuto extends SquirtleOp {
         initializeDogeforia();
         telemetry.addData(">", "Vuforia Initialization Successful");
 
-        // Make sure that the sound files exist on the phone
-        bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
-        marchSoundID   = hardwareMap.appContext.getResources().getIdentifier("march",   "raw", hardwareMap.appContext.getPackageName());
-        weowSoundID   = hardwareMap.appContext.getResources().getIdentifier("weow",   "raw", hardwareMap.appContext.getPackageName());
-        // Determine if sound resources are found.
-        // Note: Preloading is NOT required, but it's a good way to verify all your sounds are available before you run.
-        if (bandSoundID != 0)
-            bandFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, bandSoundID);
-
-        if (marchSoundID != 0)
-            marchFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, marchSoundID);
-        if (weowSoundID != 0)
-            weowFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, weowSoundID);
-
-        // Display sound status
-        telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
-        telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
-        telemetry.addData("weow sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
-
         telemetry.addData(">", "Press Start to continue");
     }
 
@@ -145,8 +126,6 @@ public class SquirtleDepotOldAuto extends SquirtleOp {
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
-                    SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, weowSoundID);
-                    telemetry.addData("Playing", "WEEOOOOWWW");
                     state++;
                 }
                 break;

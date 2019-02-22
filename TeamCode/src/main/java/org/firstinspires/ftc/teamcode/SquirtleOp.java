@@ -106,26 +106,6 @@ public class SquirtleOp extends OpMode {
     //Detector object
     GoldAlignDetector detector;
 
-    //Sound Effects
-    // Determine Resource IDs for sounds built into the RC application.
-    int bandSoundID;
-    int marchSoundID;
-    int weowSoundID;
-    boolean bandFound;
-    boolean marchFound;
-    boolean weowFound;
-
-    private boolean isUp = false;    // Gamepad button state variables
-    private boolean isDown = false;
-    private boolean isLeft = false;
-    private boolean isRight = false;
-
-    private boolean wasUp = false;   // Gamepad button history variables
-    private boolean wasDown = false;
-    private boolean wasLeft = false;
-    private boolean wasRight = false;
-
-
     public SquirtleOp() {}
 
     @Override public void init() {
@@ -156,25 +136,7 @@ public class SquirtleOp extends OpMode {
         extenderMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
         telemetry.addData(">", "Extender Initialization Successful");
 
-        // Make sure that the sound files exist on the phone
-        /*bandSoundID = hardwareMap.appContext.getResources().getIdentifier("band", "raw", hardwareMap.appContext.getPackageName());
-        marchSoundID   = hardwareMap.appContext.getResources().getIdentifier("march",   "raw", hardwareMap.appContext.getPackageName());
-        weowSoundID   = hardwareMap.appContext.getResources().getIdentifier("weow",   "raw", hardwareMap.appContext.getPackageName());
-        // Determine if sound resources are found.
-        // Note: Preloading is NOT required, but it's a good way to verify all your sounds are available before you run.
-        if (bandSoundID != 0)
-            bandFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, bandSoundID);
 
-        if (marchSoundID != 0)
-            marchFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, marchSoundID);
-        if (weowSoundID != 0)
-            weowFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, weowSoundID);
-
-        // Display sound status
-        telemetry.addData("band sound",   bandFound ?   "Found" : "NOT found\n Add band.mp3 to /src/main/res/raw" );
-        telemetry.addData("march sound", marchFound ? "Found" : "NOT found\n Add march.mp3 to /src/main/res/raw"  );
-        telemetry.addData("weow sound", weowFound ? "Found" : "NOT found\n Add weow.mp3 to /src/main/res/raw"  );
-*/
         driveTrain.initializeIMU();
         //initializeDogeforia();
         //telemetry.addData(">", "Vuforia Initialization Successful");
@@ -282,35 +244,6 @@ public class SquirtleOp extends OpMode {
         updateLatch();
         updateIntake();
         updateScoring();
-        updateSounds();
-    }
-
-    void updateSounds() {
-        // play catina band each time gamepad up is pressed (This sound is a resource)
-        if (bandFound && (isUp = gamepad1.dpad_up) && !wasUp) {
-            SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, bandSoundID);
-            telemetry.addData("Playing", "Catina Band");
-            telemetry.update();
-        }
-
-        // play imperial march each time gamepad right is pressed  (This sound is a resource)
-        if (marchFound && (isRight = gamepad1.dpad_right) && !wasRight) {
-            SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, marchSoundID);
-            telemetry.addData("Playing", "Imperial March");
-            telemetry.update();
-        }
-
-        // play weow each time gamepad right is pressed  (This sound is a resource)
-        if (weowFound && (isLeft = gamepad1.dpad_left) && !wasLeft) {
-            SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, weowSoundID);
-            telemetry.addData("Playing", "WEEOOOOWWW");
-            telemetry.update();
-        }
-
-        // Save last button states
-        wasUp = isUp;
-        wasRight = isRight;
-        wasLeft = isLeft;
     }
 
     void updateScoring() {
