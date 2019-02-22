@@ -40,7 +40,7 @@ public class DriveTrain {
     private Telemetry telemetry = null;
     private HardwareMap hardwareMap = null;
 
-    static final int COUNTS_PER_REVOLUTION_40 = 1120; //AndyMark 40:1 Motors
+    static final double COUNTS_PER_REVOLUTION_40 = 1120.0; //AndyMark 40:1 Motors
 
 
 
@@ -510,9 +510,10 @@ public class DriveTrain {
         revolutionPID.update(currentRevolutions, getRuntime());
         double power = revolutionPID.adjustmentValue();
         power = Range.clip(power, -1, 1); //ensure power doesn't exceed max speed
-        if (Math.abs(revolutionPID.getError()) >= (0.125 / 4 / (2*Math.PI))) {//0.125 inch slack / uncertainty
-            turnClockwise(power);
+        if (Math.abs(revolutionPID.getError()) >= (0.5 / 4 / (Math.PI))) {//0.5 inch slack / uncertainty
+            moveForward(power);
             telemetry.addData("Rotations left", String.format("%.2f", revolutionPID.getError()));
+            telemetry.addData("Encoder left", frontLeft.getCurrentPosition());
         }
         else {
             stopDriveMotors();

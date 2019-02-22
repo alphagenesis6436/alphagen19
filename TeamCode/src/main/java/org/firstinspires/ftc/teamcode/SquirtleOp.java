@@ -75,7 +75,7 @@ public class SquirtleOp extends OpMode {
 
     //Declare any variables & constants pertaining to Latch System
     final double LATCH_PWR = 0.95;
-    final double LATCH_HEIGHT = 12.77;
+    final double LATCH_HEIGHT = 12.80;
     double currentLatchPwr = 0.0;
     boolean latchIsRunning = false;
     boolean latchExtending = false;
@@ -467,9 +467,9 @@ public class SquirtleOp extends OpMode {
     double ai = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be 0.001 on 2/20/19
     double ad = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be 0.003 on 2/20/19
     //Driving PID Constants
-    double rp = 0.050; //proportionality constant (amount to adjust for immediate deviance) experimentally found to be ---- on -/--/19
-    double ri = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be ---- on -/--/19
-    double rd = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be ---- on -/--/19
+    double rp = 1.375; //proportionality constant (amount to adjust for immediate deviance) experimentally found to be 1.375 on 2/22/19
+    double ri = 0.001; //integral constant (amount to adjust for past errors) experimentally found to be 0.001 on 2/22/19
+    double rd = 0.003; //derivative constant (amount to adjust for future errors) experimentally found to be 0.003 on 2/22/19
 
     void advanceState() {
         state++;

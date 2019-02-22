@@ -5,11 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 /**
  * Updated by Alex on 2/11/2019.
  */
-@Autonomous(name = "SquirtleTurningTestingAuto", group = "default")
+@Autonomous(name = "SquirtleRevolutionsPIDTestingAuto", group = "default")
 //@Disabled
 public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     double drivingTime = 0;
+    double targetDistance = 0;
 
     public SquirtleRevolutionsPIDTestingAuto() {}
 
@@ -28,9 +29,10 @@ public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
                 break;
 
             case 2:
-                stateGoal = "Drive Forward 2 inches (0.5 revolutions)";
+                stateGoal = "Drive Forward 2 inches (0.16 revolutions)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForwardPID(0.5);
+                targetDistance = 2.0;
+                driveTrain.moveForwardPID(targetDistance/4.0/Math.PI);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -49,9 +51,10 @@ public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
                 }
                 break;
             case 6:
-                stateGoal = "Drive Forward 12 inches (3 revolutions)";
+                stateGoal = "Drive Forward 12 inches (0.95 revolutions)";
+                targetDistance = 12.0;
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForwardPID(3);
+                driveTrain.moveForwardPID(targetDistance/4.0/Math.PI);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
