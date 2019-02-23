@@ -377,7 +377,7 @@ public class DriveTrain {
     private Orientation angles;
     public PID anglePID = new PID();
     public PID revolutionPID = new PID();
-    private int currentAngle = 0;
+    public int currentAngle = 0;
     public double turningConstant = 0.007;
     private boolean disableEncoderCalibration = false;
     public boolean encoderTargetReached = false;
