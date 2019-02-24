@@ -51,6 +51,7 @@ public class DriveTrain {
     private double drivePwrMax = 0.80; //80% by default
     private double turnPwrMax = 0.60; //60% by default, only for slide/mecanum/holonomic
     private double gearRatio = 1; //Driven / Driver, 1 by default
+    private double wheelDiameter = 4.0; //Measured in inches, 4 inches by default
     private double frPower, flPower, brPower, blPower;
 
     //Code to be run in the init() method of your OpMode
@@ -69,14 +70,19 @@ public class DriveTrain {
     public void setGearRatio(double ratio) {
         gearRatio = ratio;
     }
-    public void setConstants(double drivePwrMax, double turnPwrMax, double gearRatio) {
+    public void setWheelDiameter(double diameter) {
+        wheelDiameter = diameter;
+    }
+    public void setConstants(double drivePwrMax, double turnPwrMax, double gearRatio, double wheelDiameter) {
         setDrivePwrMax(drivePwrMax);
         setTurnPwrMax(turnPwrMax);
         setGearRatio(gearRatio);
+        setWheelDiameter(wheelDiameter);
     }
-    public void setConstants(double drivePwrMax, double gearRatio) {
+    public void setConstants(double drivePwrMax, double gearRatio, double wheelDiameter) {
         setDrivePwrMax(drivePwrMax);
         setGearRatio(gearRatio);
+        setWheelDiameter(wheelDiameter);
     }
     public void setGamepad(Gamepad gamepad) {
         this.gamepad = gamepad;
@@ -377,6 +383,8 @@ public class DriveTrain {
     private Orientation angles;
     public PID anglePID = new PID();
     public PID revolutionPID = new PID();
+    private double PIDRevolutions = 0.0;
+    private double lastRevolution = 0.0;
     public int currentAngle = 0;
     public double turningConstant = 0.007;
     private boolean disableEncoderCalibration = false;
@@ -409,7 +417,6 @@ public class DriveTrain {
     }
     public float getHeading() {
         updateAngles();
-        telemetry.addData("Heading", -angles.firstAngle);
         return -angles.firstAngle;
     }
 
@@ -448,9 +455,30 @@ public class DriveTrain {
         }
     }
 
-    public double getRevolutionsDriven() {
-        telemetry.addData("Revolutions Driven", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
+    public double getRevolutions() {
         return frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio;
+    }
+    public double getDistance() {
+        return convertRev2Distance(getRevolutions());
+    }
+
+    public double convertDistance2Rev(double distance) {
+        return distance / wheelDiameter / Math.PI;
+    }
+
+    public double convertRev2Distance(double revolutions) {
+        return revolutions * wheelDiameter * Math.PI;
+    }
+
+    public boolean inRevRange(double minRev, double maxRev) {
+        return getRevolutions() >= minRev && getRevolutions() <= maxRev;
+    }
+    public boolean inDistanceRange( double minDistance, double maxDistance) {
+        return getDistance() >= minDistance && getDistance() <= maxDistance;
+    }
+
+    public boolean inHeadingRange(double minHeading, double maxHeading) {
+        return getHeading() >= minHeading && getHeading() <= maxHeading;
     }
 
     public void move(double pwr_fr, double pwr_fl, double pwr_br, double pwr_bl) {
@@ -505,16 +533,31 @@ public class DriveTrain {
     }
 
     public void moveForwardPID(double targetRevolutions) {
-        revolutionPID.setTargetValue(targetRevolutions);
+        double power;
+        //convert encoder count to revolutions & calculate current error
         double currentRevolutions = frontLeft.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio;
-        revolutionPID.update(currentRevolutions, getRuntime());
-        double power = revolutionPID.adjustmentValue();
-        power = Range.clip(power, -1, 1); //ensure power doesn't exceed max speed
-        if (Math.abs(revolutionPID.getError()) >= (0.5 / 4 / (Math.PI))) {//0.5 inch slack / uncertainty
+        double error = targetRevolutions - currentRevolutions;
+        //if more than one revolution left, run at full speed
+        if (Math.abs(targetRevolutions - currentRevolutions) > 1) {
+            power = Math.abs(targetRevolutions) / targetRevolutions;
+            lastRevolution = currentRevolutions;
+        }
+        //start PID control within the last revolution of travel (approximately 12 inches for 4 inch diameter wheel)
+        else {
+            revolutionPID.setTargetValue(targetRevolutions - lastRevolution);
+            revolutionPID.update(currentRevolutions - lastRevolution, getRuntime());
+            power = revolutionPID.adjustmentValue();
+        }
+        //ensure power doesn't exceed max 100%
+        power = Range.clip(power, -1, 1);
+
+        //run motors if error not within an uncertainty of 0.5 inch & give telemetry
+        if (Math.abs(error) >= (convertDistance2Rev(0.5))) {
             moveForward(power);
-            telemetry.addData("Rotations left", String.format("%.2f", revolutionPID.getError()));
+            telemetry.addData("Inches left", String.format("%.2f", convertRev2Distance(error)));
             telemetry.addData("Encoder left", frontLeft.getCurrentPosition());
         }
+        //stop motors and reset PID when error is within uncertainty range
         else {
             stopDriveMotors();
             revolutionPID.reset();

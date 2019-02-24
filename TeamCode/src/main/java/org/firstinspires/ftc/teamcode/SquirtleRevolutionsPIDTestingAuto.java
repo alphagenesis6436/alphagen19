@@ -32,7 +32,7 @@ public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
                 stateGoal = "Drive Forward 2 inches (0.16 revolutions)";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 targetDistance = 2.0;
-                driveTrain.moveForwardPID(targetDistance/4.0/Math.PI);
+                driveTrain.moveForwardPID(driveTrain.convertDistance2Rev(targetDistance));
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -44,17 +44,18 @@ public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
             case 4:
                 stateGoal = "Wait for the A button to be pressed";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                telemetry.addData("Driving Time",String.format("%.1f", drivingTime));
+                telemetry.addData("Driving Time",String.format("%.2f", drivingTime));
                 if (gamepad1.a) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     advanceState();
                 }
                 break;
+
             case 6:
                 stateGoal = "Drive Forward 12 inches (0.95 revolutions)";
                 targetDistance = 12.0;
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForwardPID(targetDistance/4.0/Math.PI);
+                driveTrain.moveForwardPID(driveTrain.convertDistance2Rev(targetDistance));
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -67,7 +68,31 @@ public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
             case 8:
                 stateGoal = "Wait for the A button to be pressed";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                telemetry.addData("Driving Time",String.format("%.1f", drivingTime));
+                telemetry.addData("Driving Time",String.format("%.2f", drivingTime));
+                if (gamepad1.a) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    advanceState();
+                }
+                break;
+
+            case 10:
+                stateGoal = "Drive Forward 20 inches (1.59 revolutions)";
+                targetDistance = 20.0;
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.moveForwardPID(driveTrain.convertDistance2Rev(targetDistance));
+
+                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
+                    driveTrain.stopDriveMotors();
+                    drivingTime = this.time - setTime;
+                    advanceState();
+                }
+                break;
+
+
+            case 12:
+                stateGoal = "Wait for the A button to be pressed";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                telemetry.addData("Driving Time",String.format("%.2f", drivingTime));
                 if (gamepad1.a) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     advanceState();

@@ -204,7 +204,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 20:
+            /*case 20:
                 stateGoal = "Turn to have phone ALMOST face RIGHT Sampling Mineral - Turn 30 ccw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.turnRelativePID(-25);
@@ -213,28 +213,27 @@ public class SquirtleDepotAuto extends SquirtleOp {
                     driveTrain.stopDriveMotors();
                     advanceState();
                 }
-                break;
+                break;*/
 
-            case 22: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
+            case 20: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
                 stateGoal = "Scan for Gold Mineral - Turn to Absolute -90 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                //turn at 20% power when robot is in range of RIGHT or CENTER mineral
-                if ((driveTrain.getHeading() <= -25 && driveTrain.getHeading() >= -50) || (driveTrain.getHeading() <= -65 && driveTrain.getHeading() >= -105)) {
+                //turn at 15% power when robot is in range of RIGHT or CENTER mineral
+                if (driveTrain.inHeadingRange(-50, -25) || driveTrain.inHeadingRange(-105, -65)) {
                     driveTrain.turnClockwise(-0.15);
                 }
                 //turn at 90% power when robot is NOT in range of a mineral
                 else {
-                    driveTrain.turnClockwise(-0.90);
+                    driveTrain.turnAbsolutePID(-90);
                 }
-
-
-                if (goldAligned()) { //if gold found, then it's either center or left position
+                //if gold found, then it's either center or right position
+                if (goldAligned()) {
                     driveTrain.stopDriveMotors();
                     goldPosition = (driveTrain.getHeading() >= -65) ? RIGHT : CENTER;
-
-                    advanceState(); //skip alignment step for gold in right position
+                    advanceState();
                 }
-                else if (driveTrain.getHeading() <= -105) { //if gold not found within 1.5 revolutions, then cube is right position
+                //if gold not found within -105 degrees, then cube is left position
+                else if (driveTrain.getHeading() <= -105) {
                     driveTrain.stopDriveMotors();
                     goldPosition = LEFT;
                     advanceState();
@@ -242,7 +241,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 24: //Drive Forward to face gold cube
+            case 22: //Drive Forward to face gold cube
                 stateGoal = "Align to Cube - Turn Appropriately";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
@@ -261,7 +260,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
 
-            case 26:
+            case 24:
                 stateGoal = "Move Toward Lander and Bring Intake Down - Drive Forward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.moveForward(0.9, 0.45);
@@ -273,7 +272,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 28: //Knock off cube - Drive Forward
+            case 26: //Knock off cube - Drive Forward
                 stateGoal = "Collect cube - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.moveForward(-0.90, -1.3);
@@ -286,7 +285,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 30: //Knock off cube - Drive Forward
+            case 28: //Knock off cube - Drive Forward
                 stateGoal = "Retreat With Mineral - Drive Forward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.moveForward(0.90, 1.3);

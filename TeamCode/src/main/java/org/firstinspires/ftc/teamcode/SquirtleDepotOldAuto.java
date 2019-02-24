@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -251,7 +250,7 @@ public class SquirtleDepotOldAuto extends SquirtleOp {
 
                 if (goldAligned()) { //if gold found, then it's either center or left position
                     driveTrain.stopDriveMotors();
-                    goldPosition = (Math.abs(driveTrain.getRevolutionsDriven()) <= 1) ? CENTER : LEFT;
+                    goldPosition = (Math.abs(driveTrain.getRevolutions()) <= 1) ? CENTER : LEFT;
                     state += 3; //skip alignment step for gold in right position
                 }
                 else if (driveTrain.encoderTargetReached) { //if gold not found within 1.5 revolutions, then cube is right position

@@ -86,7 +86,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
                 driveTrain.moveForward(0.4, 0.5);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
+                    revsTraveledFromLastState = driveTrain.getRevolutions();
                     driveTrain.stopDriveMotors();
                     state = 1000;
                 }
@@ -113,19 +113,19 @@ public class DepotAuto extends WoBuZhiDaoOp {
 
                 if (goldAligned()) { //if gold found, then it's either center or left position
                     driveTrain.stopDriveMotors();
-                    if (Math.abs(driveTrain.getRevolutionsDriven()) <= 0.5) {
+                    if (Math.abs(driveTrain.getRevolutions()) <= 0.5) {
                         goldPosition = CENTER;
                     }
                     else {
                         goldPosition = LEFT;
                     }
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
+                    revsTraveledFromLastState = driveTrain.getRevolutions();
                     state = 1000; //skip alignment step for gold in right position
                 }
                 else if (driveTrain.encoderTargetReached) { //if gold not found within 75 degree ccw turn, then cube is right position
                     driveTrain.stopDriveMotors();
                     goldPosition = RIGHT;
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
+                    revsTraveledFromLastState = driveTrain.getRevolutions();
                     state = 1000;
                 }
                 break;
@@ -135,7 +135,7 @@ public class DepotAuto extends WoBuZhiDaoOp {
                 stateName = "Align to Cube in Right Position - Drive Forward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.runConstantSpeed();
-                if (driveTrain.getRevolutionsDriven() > revsTraveledFromLastState) {
+                if (driveTrain.getRevolutions() > revsTraveledFromLastState) {
                     driveTrain.moveForward(0.80); //turn quickly until heading is 25 degrees cw of initial position
                 }
                 else {
@@ -143,12 +143,12 @@ public class DepotAuto extends WoBuZhiDaoOp {
                 }
 
                 if (goldAligned()) {
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
+                    revsTraveledFromLastState = driveTrain.getRevolutions();
                     driveTrain.stopDriveMotors();
                     state = 1000;
                 }
                 else if (driveTrain.encoderTargetReached) { //if gold not found, STOP at 75 degrees cw of initial position
-                    revsTraveledFromLastState = driveTrain.getRevolutionsDriven();
+                    revsTraveledFromLastState = driveTrain.getRevolutions();
                     driveTrain.stopDriveMotors();
                     state = 1000;
                 }
