@@ -246,11 +246,11 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateGoal = "Align to Cube - Turn Appropriately";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
-                    case LEFT: driveTrain.turnAbsolutePID(-37);
+                    case LEFT: driveTrain.turnAbsolutePID(-45);
                         break;
                     case CENTER: driveTrain.turnAbsolutePID(0);
                         break;
-                    case RIGHT: driveTrain.turnAbsolutePID(37);
+                    case RIGHT: driveTrain.turnAbsolutePID(43);
                         break;
                 }
 
@@ -300,7 +300,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 32:
                 stateGoal = "Robot Face Crater - Turn to -105 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnAbsolutePID(-105);
+                driveTrain.turnAbsolutePID(-92);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
