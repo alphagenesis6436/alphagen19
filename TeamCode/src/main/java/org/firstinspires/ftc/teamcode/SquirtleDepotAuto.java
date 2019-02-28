@@ -300,7 +300,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 32:
                 stateGoal = "Robot Face Crater - Turn to -105 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnAbsolutePID(-84);
+                driveTrain.turnAbsolutePID(-85);
 
                 if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -326,9 +326,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateGoal = "Park in Crater - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.moveForward(-0.90, -4.4);
-                extendIntake(0.4);
                 if (driveTrain.encoderTargetReached) {
-                    extendIntake(0);
                     setTiltServos(TILT_MIN + 0.03);
                     driveTrain.stopDriveMotors();
                     state = 1000;
