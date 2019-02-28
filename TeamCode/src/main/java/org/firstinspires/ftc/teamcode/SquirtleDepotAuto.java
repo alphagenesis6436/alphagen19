@@ -184,6 +184,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateGoal = "Rotate intake up";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 setTiltServos(TILT_MAX);
+                //start retracting intake to save time
                 extendIntake(-0.4);
 
                 if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
@@ -324,7 +325,6 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }*/
                 stateGoal = "Park in Crater - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                setTiltServos(TILT_SCORE - 0.20);
                 driveTrain.moveForward(-0.90, -2.2);
                 extendIntake(0.4);
                 if (driveTrain.encoderTargetReached) {
