@@ -268,7 +268,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
-                    state++;
+                    advanceState();
                 }
                 break;
 
@@ -281,7 +281,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
                     intakeMotor.setPower(0);
-                    state++;
+                    advanceState();
                 }
                 break;
 
@@ -292,7 +292,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 setTiltServos(TILT_MAX);
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
-                    state++;
+                    advanceState();
                 }
                 break;
 
@@ -331,7 +331,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                     extendIntake(0);
                     setTiltServos(TILT_MIN + 0.03);
                     driveTrain.stopDriveMotors();
-                    state++;
+                    state = 1000;
                 }
                 break;
 

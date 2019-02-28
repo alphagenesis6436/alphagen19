@@ -317,7 +317,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                     extendIntake(0);
                     setTiltServos(TILT_MIN + 0.03);
                     driveTrain.stopDriveMotors();
-                    advanceState();
+                    state = 1000;
                 }
                 break;
 
