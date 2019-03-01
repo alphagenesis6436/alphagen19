@@ -124,7 +124,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
             case 6:
                 stateGoal = "Move Toward Sampling Field - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -1.1);
+                driveTrain.moveForward(-0.90, -1.25);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -142,7 +142,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                     }
                     //turn at 90% power when robot is NOT in range of a mineral
                     else {
-                        driveTrain.turnAbsolutePID(-90);
+                        driveTrain.turnAbsolutePID(-80);
                     }
                     //if gold found, then it's in right or center position
                     if (goldAligned()) {
@@ -150,7 +150,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                     }
                 }
                 else {
-                    driveTrain.turnAbsolutePID(-90);
+                    driveTrain.turnAbsolutePID(-80);
                 }
 
                 if (driveTrain.angleTargetReached) {

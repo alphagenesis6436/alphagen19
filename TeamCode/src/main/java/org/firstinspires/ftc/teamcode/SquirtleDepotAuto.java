@@ -220,7 +220,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateGoal = "Scan for Gold Mineral - Turn to Absolute -90 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 //turn at 15% power when robot is in range of RIGHT or CENTER mineral
-                if (driveTrain.inHeadingRange(-60, -25) || driveTrain.inHeadingRange(-105, -65)) {
+                if (driveTrain.inHeadingRange(-65, -10) || driveTrain.inHeadingRange(-105, -65)) {
                     driveTrain.turnClockwise(-0.15);
                 }
                 //turn at 90% power when robot is NOT in range of a mineral
@@ -317,7 +317,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                         break;
                     case CENTER: driveTrain.moveForward(-0.90, -3.7);
                         break;
-                    case RIGHT: driveTrain.moveForward(-0.90, -3.7);
+                    case RIGHT: driveTrain.moveForward(-0.90, -3.95);
                         break;
                 }
                 if (driveTrain.encoderTargetReached) {
