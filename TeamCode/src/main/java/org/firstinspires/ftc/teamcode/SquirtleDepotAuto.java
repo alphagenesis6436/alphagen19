@@ -147,7 +147,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 10:
                 stateGoal = "Move Toward Sampling Field - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -0.4);
+                driveTrain.moveForward(-0.90, -0.25); //before revolution is 0.4 3/4/2019
                 extendIntake(0.9);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
@@ -220,13 +220,15 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 stateGoal = "Scan for Gold Mineral - Turn to Absolute -90 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 //turn at 15% power when robot is in range of RIGHT or CENTER mineral
-                if (driveTrain.inHeadingRange(-60, -25) || driveTrain.inHeadingRange(-105, -65)) {
-                    driveTrain.turnClockwise(-0.15);
+                driveTrain.turnClockwise(-0.13); //power -0.15 3/4/2019
+                /*if (driveTrain.inHeadingRange(-60, -25) || driveTrain.inHeadingRange(-105, -65)) {
+                    driveTrain.turnClockwise(-0.13); //power -0.15 3/4/2019
                 }
                 //turn at 90% power when robot is NOT in range of a mineral
                 else {
                     driveTrain.turnAbsolutePID(-90);
                 }
+                */
                 //if gold found, then it's either center or right position
                 if (goldAligned()) {
                     driveTrain.stopDriveMotors();
@@ -317,7 +319,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
                         break;
                     case CENTER: driveTrain.moveForward(-0.90, -3.7);
                         break;
-                    case RIGHT: driveTrain.moveForward(-0.90, -3.7);
+                    case RIGHT: driveTrain.moveForward(-0.90, -4.1);
                         break;
                 }
                 if (driveTrain.encoderTargetReached) {
