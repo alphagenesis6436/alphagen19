@@ -200,7 +200,7 @@ public class SquirtleOp extends OpMode {
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
         telemetryDriveTrain();
-        telemetryIntake();
+        //telemetryIntake();
         //telemetryExtender();
         //telemetryScoring();
         telemetryLatch();
