@@ -333,13 +333,13 @@ public class DriveTrain {
                     telemetry.addData("TANK DRIVE", "TELEMETRY");
                     telemetry.addData(">>>Left Pwr", frontLeft.getPower());
                     telemetry.addData(">>>Right Pwr", frontRight.getPower());
-                    telemetry.addData(">>>Drive Encoder", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
+                    telemetry.addData(">>>Drive Encoder", String.format("%.2f", getDistance()) + " in");
                     break;
                 case ARCADE:
                     telemetry.addData("ARCADE DRIVE", "TELEMETRY");
                     telemetry.addData(">>>Left Pwr", frontLeft.getPower());
                     telemetry.addData(">>>Right Pwr", frontRight.getPower());
-                    telemetry.addData(">>>Drive Encoder", String.format("%.2f", frontRight.getCurrentPosition() / COUNTS_PER_REVOLUTION_40 / gearRatio));
+                    telemetry.addData(">>>Drive Encoder", String.format("%.2f", getDistance()) + " in");
                     break;
                 case SLIDE:
                     telemetry.addData("SLIDE DRIVE", "TELEMETRY");
@@ -744,7 +744,7 @@ public class DriveTrain {
             turnClockwise(power);
         else {
             stopDriveMotors();
-            currentAngle = targetAngleDisplacement;
+            currentAngle = targetAngle;
             angleTargetReached = true;
         }
     }

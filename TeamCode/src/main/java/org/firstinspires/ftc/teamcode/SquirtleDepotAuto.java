@@ -221,14 +221,15 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 //turn at 15% power when robot is in range of RIGHT or CENTER mineral
                 driveTrain.turnClockwise(-0.13); //power -0.15 3/4/2019
-                /*if (driveTrain.inHeadingRange(-60, -25) || driveTrain.inHeadingRange(-105, -65)) {
-                    driveTrain.turnClockwise(-0.13); //power -0.15 3/4/2019
+
+                if (driveTrain.inHeadingRange(-65, -10) || driveTrain.inHeadingRange(-105, -65)) {
+                    driveTrain.turnClockwise(-0.15);
                 }
                 //turn at 90% power when robot is NOT in range of a mineral
                 else {
                     driveTrain.turnAbsolutePID(-90);
                 }
-                */
+
                 //if gold found, then it's either center or right position
                 if (goldAligned()) {
                     driveTrain.stopDriveMotors();
@@ -319,7 +320,8 @@ public class SquirtleDepotAuto extends SquirtleOp {
                         break;
                     case CENTER: driveTrain.moveForward(-0.90, -3.7);
                         break;
-                    case RIGHT: driveTrain.moveForward(-0.90, -4.1);
+                    case RIGHT: driveTrain.moveForward(-0.90, -3.95);
+
                         break;
                 }
                 if (driveTrain.encoderTargetReached) {

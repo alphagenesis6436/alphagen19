@@ -200,7 +200,7 @@ public class SquirtleOp extends OpMode {
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
         telemetryDriveTrain();
-        telemetryIntake();
+        //telemetryIntake();
         //telemetryExtender();
         //telemetryScoring();
         telemetryLatch();
@@ -512,7 +512,7 @@ public class SquirtleOp extends OpMode {
     boolean goldAligned() {
         boolean isAligned = false;
         int centerValue = 275;
-        int uncertainty = 30; //was 25 before 2/11/2019
+        int uncertainty = 40; //was 30 before 2/28/2019
         if (Math.abs(detector.getXPosition() - centerValue) <= uncertainty)
             isAligned = true;
         return isAligned;
