@@ -12,15 +12,15 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
 /**
  * Updated by Alex on 2/11/2019.
  */
-@Autonomous(name = "SquirtleCraterAuto", group = "default")
+@Autonomous(name = "BlueCraterAuto", group = "default")
 //@Disabled
-public class SquirtleCraterAuto extends SquirtleOp {
+public class BlueCraterAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
     String goldPos = "NOT FOUND";
     boolean latchReset = false;
 
-    public SquirtleCraterAuto() {}
+    public BlueCraterAuto() {}
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -135,22 +135,23 @@ public class SquirtleCraterAuto extends SquirtleOp {
             case 8:
                 stateGoal = "Scan for Gold Mineral in RIGHT Position - Turn to Absolute -90 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                if (goldPosition != LEFT) {
+                if (goldPosition == NOT_FOUND) {
                     //turn at 15% power when robot is in range of RIGHT mineral
-                    if (driveTrain.inHeadingRange(-50, -5)) {
-                        driveTrain.turnClockwise(-0.15);
+                    if (driveTrain.inHeadingRange(-65, -10)) {
+                        driveTrain.turnClockwise(-0.11);
+                        //if gold found, then it's in right or center position
+                        if (goldAligned() && driveTrain.inHeadingRange(-60, -15)) {
+                            goldPosition = RIGHT;
+                        }
                     }
                     //turn at 90% power when robot is NOT in range of a mineral
                     else {
                         driveTrain.turnAbsolutePID(-80);
                     }
-                    //if gold found, then it's in right or center position
-                    if (goldAligned()) {
-                        goldPosition = RIGHT;
-                    }
+
                 }
                 else {
-                    driveTrain.turnAbsolutePID(-84);
+                    driveTrain.turnAbsolutePID(-80);
                 }
 
                 if (driveTrain.angleTargetReached) {
@@ -176,13 +177,13 @@ public class SquirtleCraterAuto extends SquirtleOp {
                         goldPosition = CENTER;
                     }
                     //if gold not found within 4.5 inches, then cube is left position
-                    else if (driveTrain.getDistance() <= -4.0) {
+                    else if (driveTrain.getDistance() <= -5) {
                         goldPosition = LEFT;
                         driveTrain.encoderTargetReached = true;
                     }
                 }
                 else { //stop in front of center mineral
-                    driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(4.0)); //used to be 49
+                    driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(5)); //used to be 49
                 }
                 if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -194,7 +195,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateGoal = "Align to Cube - Turn Appropriately";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
-                    case LEFT: driveTrain.turnAbsolutePID(-45);
+                    case LEFT: driveTrain.turnAbsolutePID(-51);
                         break;
                     case CENTER: driveTrain.turnAbsolutePID(0);
                         break;
@@ -262,11 +263,11 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 stateGoal = "Drive to Depot Wall - Drive Backwards";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
-                    case LEFT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(30));
+                    case LEFT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(25));
                         break;
                     case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(47.5));
                         break;
-                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(49.5));
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(50));
                         break;
                 }
 
@@ -319,7 +320,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
                 break;
 
             case 28:
-                stateGoal = "Drive Away from Depot & Retract Intake - Drive Forward";
+                stateGoal = "Drive Away from Depot - Drive Forward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(24));
                 setTiltServos(TILT_MAX);
@@ -334,7 +335,7 @@ public class SquirtleCraterAuto extends SquirtleOp {
             case 30: //Turn to face Depot
                 stateGoal = "Turn to Face Crater - Turn 180 cw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnAbsolutePID(35);
+                driveTrain.turnAbsolutePID(30);
 
                 if (driveTrain.angleTargetReached) {
                     driveTrain.stopDriveMotors();
@@ -345,7 +346,14 @@ public class SquirtleCraterAuto extends SquirtleOp {
             case 32:
                 stateGoal = "Park in Crater - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                switch (goldPosition) {
+                    case LEFT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                        break;
+                    case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                        break;
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(24));
+                        break;
+                }
                 if (driveTrain.encoderTargetReached) {
                     setTiltServos(TILT_MIN + 0.03);
                     driveTrain.stopDriveMotors();

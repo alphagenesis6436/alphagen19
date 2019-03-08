@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,15 +12,15 @@ import static org.firstinspires.ftc.teamcode.GoldPosition.RIGHT;
 /**
  * Updated by Alex on 2/11/2019.
  */
-@Autonomous(name = "SquirtleDepotAuto", group = "default")
+@Autonomous(name = "RedCraterAuto", group = "default")
 //@Disabled
-public class SquirtleDepotAuto extends SquirtleOp {
+public class RedCraterAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     GoldPosition goldPosition = NOT_FOUND;
     String goldPos = "NOT FOUND";
     boolean latchReset = false;
 
-    public SquirtleDepotAuto() {}
+    public RedCraterAuto() {}
 
     @Override public void init() {
         //Initialize motors & set direction
@@ -55,6 +53,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
         driveTrain.initializeIMU();
         initializeDogeforia();
         telemetry.addData(">", "Vuforia Initialization Successful");
+
 
         telemetry.addData(">", "Press Start to continue");
     }
@@ -125,7 +124,7 @@ public class SquirtleDepotAuto extends SquirtleOp {
             case 6:
                 stateGoal = "Move Toward Sampling Field - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -1.1);
+                driveTrain.moveForward(-0.90, -1.15);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -134,123 +133,73 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 break;
 
             case 8:
-                stateGoal = "Turn to original angle";
+                stateGoal = "Scan for Gold Mineral in RIGHT Position - Turn to Absolute -90 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnAbsolutePID(0);
+                if (goldPosition == NOT_FOUND) {
+                    //turn at 15% power when robot is in range of RIGHT mineral
+                    if (driveTrain.inHeadingRange(-65, -10)) {
+                        driveTrain.turnClockwise(-0.11);
+                        //if gold found, then it's in right or center position
+                        if (goldAligned() && driveTrain.inHeadingRange(-60, -15)) {
+                            goldPosition = RIGHT;
+                        }
+                    }
+                    //turn at 90% power when robot is NOT in range of a mineral
+                    else {
+                        driveTrain.turnAbsolutePID(-80);
+                    }
 
-                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    driveTrain.stopDriveMotors();
-                    advanceState();
                 }
-                break;
-
-            case 10:
-                stateGoal = "Move Toward Sampling Field - Drive Backward";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -0.4);
-                extendIntake(0.9);
-
-                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    driveTrain.stopDriveMotors();
-                    advanceState();
-                }
-                break;
-
-            case 12:
-                stateGoal = "Extend Intake";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendIntake(0.9);
-
-                if (waitSec(0.8)) { //Use a boolean value that reads true when state goal is completed
-                    extendIntake(0);
-                    advanceState();
-                }
-                break;
-
-            case 14:
-                stateGoal = "Drop Marker - Rotate intake down";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                setTiltServos(TILT_MIN);
-                if (waitSec(0.55)) {
-                    intakeMotor.setPower(0.90);
-                }
-
-                if (waitSec(1.25)) { //Use a boolean value that reads true when state goal is completed
-                   advanceState();
-                }
-                break;
-
-            case 16:
-                stateGoal = "Rotate intake up";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                setTiltServos(TILT_MAX);
-                //start retracting intake to save time
-                extendIntake(-0.4);
-
-                if (waitSec(0.05)) { //Use a boolean value that reads true when state goal is completed
-                    intakeMotor.setPower(0);
-                    advanceState();
-                }
-                break;
-
-            case 18:
-                stateGoal = "Retract Intake";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                extendIntake(-0.8);
-                driveTrain.moveForward(0.90, 0.30); //AND back up
-
-                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
-                    extendIntake(0);
-                    advanceState();
-                }
-                break;
-
-            /*case 20:
-                stateGoal = "Turn to have phone ALMOST face RIGHT Sampling Mineral - Turn 30 ccw";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnRelativePID(-25);
-
-                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    driveTrain.stopDriveMotors();
-                    advanceState();
-                }
-                break;*/
-
-            case 20: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
-                stateGoal = "Scan for Gold Mineral - Turn to Absolute -90 degrees";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                //turn at 15% power when robot is in range of RIGHT or CENTER mineral
-                if (driveTrain.inHeadingRange(-65, -10) || driveTrain.inHeadingRange(-105, -65)) {
-                    driveTrain.turnClockwise(-0.15);
-                }
-                //turn at 90% power when robot is NOT in range of a mineral
                 else {
-                    driveTrain.turnAbsolutePID(-90);
+                    driveTrain.turnAbsolutePID(-80);
                 }
-                //if gold found, then it's either center or right position
-                if (goldAligned()) {
+
+                if (driveTrain.angleTargetReached) {
                     driveTrain.stopDriveMotors();
-                    goldPosition = (driveTrain.getHeading() >= -65) ? RIGHT : CENTER;
-                    advanceState();
+                    if (goldPosition == RIGHT) {
+                        advanceState(1);
+                    }
+                    else {
+                        advanceState();
+                    }
                 }
-                //if gold not found within -105 degrees, then cube is left position
-                else if (driveTrain.getHeading() <= -105) {
+                break;
+
+            case 10: //Search for Gold Mineral by Driving Backward and using GoldMineralDetector
+                stateGoal = "Scan for Gold Mineral in CENTER Position & Drive to Wall - Drive Backwards";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                if (goldPosition == NOT_FOUND) {
+                    //drive at 15% power when robot is in range of CENTER mineral
+                    driveTrain.moveForward(-0.15);
+
+                    //if gold found, then it's CENTER position
+                    if (goldAligned()) {
+                        goldPosition = CENTER;
+                    }
+                    //if gold not found within 4.5 inches, then cube is left position
+                    else if (driveTrain.getDistance() <= -5) {
+                        goldPosition = LEFT;
+                        driveTrain.encoderTargetReached = true;
+                    }
+                }
+                else { //stop in front of center mineral
+                    driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(5)); //used to be 49
+                }
+                if (driveTrain.encoderTargetReached) {
                     driveTrain.stopDriveMotors();
-                    goldPosition = LEFT;
                     advanceState();
                 }
                 break;
 
-
-            case 22: //Drive Forward to face gold cube
+            case 12: //Drive Forward to face gold cube
                 stateGoal = "Align to Cube - Turn Appropriately";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
-                    case LEFT: driveTrain.turnAbsolutePID(-50);
+                    case LEFT: driveTrain.turnAbsolutePID(-51);
                         break;
-                    case CENTER: driveTrain.turnAbsolutePID(-10);
+                    case CENTER: driveTrain.turnAbsolutePID(0);
                         break;
-                    case RIGHT: driveTrain.turnAbsolutePID(35);
+                    case RIGHT: driveTrain.turnAbsolutePID(-135);
                         break;
                 }
 
@@ -260,12 +209,98 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
+            case 14: //Knock off cube - Drive Forward
+                stateGoal = "Knock off cube - Drive Backward";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                switch (goldPosition) {
+                    case LEFT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(17));
+                        break;
+                    case CENTER: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(9));
+                        break;
+                    case RIGHT: driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(14));
+                        break;
+                }
+                if (driveTrain.encoderTargetReached) {
+                    driveTrain.stopDriveMotors();
+                    if (goldPosition == LEFT) {
+                        advanceState(1);
+                    }
+                    else {
+                        advanceState();
+                    }
+                }
+                break;
+
+            case 16: //Retreat From Mineral - Drive Forward"
+                stateGoal = "Retreat From Mineral - Drive Forward";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                switch (goldPosition) {
+                    case CENTER: driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(8));
+                        break;
+                    case RIGHT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(13));
+                        break;
+                }
+
+                if (driveTrain.encoderTargetReached) {
+                    driveTrain.stopDriveMotors();
+                    advanceState();
+                }
+                break;
+
+
+            case 18: //Turn to face Depot Wall
+                stateGoal = "Turn to Face Depot Wall - Turn 45 ccw";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.turnAbsolute(-90);
+
+                if (driveTrain.angleTargetReached) {
+                    driveTrain.stopDriveMotors();
+                    advanceState();
+                }
+                break;
+
+            case 20:
+                stateGoal = "Drive to Depot Wall - Drive Backwards";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                switch (goldPosition) {
+                    case LEFT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(25));
+                        break;
+                    case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(47.5));
+                        break;
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(50));
+                        break;
+                }
+
+                if (driveTrain.encoderTargetReached) {
+                    driveTrain.stopDriveMotors();
+                    advanceState();
+                }
+                break;
+
+            case 22: //Turn to face Depot Wall
+                stateGoal = "Turn to Face Depot - Turn 45 ccw";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.turnRelativePID(-39);
+
+                if (driveTrain.angleTargetReached) {
+                    driveTrain.stopDriveMotors();
+                    advanceState();
+                }
+                break;
+
 
             case 24:
-                stateGoal = "Move Toward Lander and Bring Intake Down - Drive Forward";
+                stateGoal = "Drive to Depot & Lower Intake - Drive Backwards";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(0.9, 0.45);
-                setTiltServos(TILT_MIN);
+                switch (goldPosition) {
+                    case LEFT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(32));
+                        break;
+                    case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(19));
+                        break;
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                        break;
+                }
+                setTiltServos(TILT_MIN + 0.10);
 
                 if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
@@ -273,74 +308,52 @@ public class SquirtleDepotAuto extends SquirtleOp {
                 }
                 break;
 
-            case 26: //Knock off cube - Drive Forward
-                stateGoal = "Collect cube - Drive Backward";
+            case 26:
+                stateGoal = "Drop Marker - Spin Intake Out";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -1.3);
-                intakeMotor.setPower(-0.60);
+                setTiltServos(TILT_MIN);
+                intakeMotor.setPower(0.50);
 
-                if (driveTrain.encoderTargetReached) {
+                if (waitSec(1)) { //Use a boolean value that reads true when state goal is completed
+                    advanceState();
+                }
+                break;
+
+            case 28:
+                stateGoal = "Drive Away from Depot - Drive Forward";
+                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
+                driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(24));
+                setTiltServos(TILT_MAX);
+
+                if (driveTrain.encoderTargetReached) { //Use a boolean value that reads true when state goal is completed
                     driveTrain.stopDriveMotors();
                     intakeMotor.setPower(0);
                     advanceState();
                 }
                 break;
 
-            case 28: //Knock off cube - Drive Forward
-                stateGoal = "Retreat With Mineral - Drive Forward";
+            case 30: //Turn to face Depot
+                stateGoal = "Turn to Face Crater - Turn 180 cw";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(0.90, 1.0);
-                setTiltServos(TILT_MAX);
-                if (driveTrain.encoderTargetReached) {
+                driveTrain.turnAbsolutePID(30);
+
+                if (driveTrain.angleTargetReached) {
                     driveTrain.stopDriveMotors();
                     advanceState();
                 }
                 break;
 
             case 32:
-                stateGoal = "Robot Face Crater - Turn to -82 degrees";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnAbsolutePID(-82);
-
-                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    driveTrain.stopDriveMotors();
-                    advanceState();
-                }
-                break;
-
-
-            case 34:
-                stateGoal = "Drive to Crater - Drive Backward";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                switch (goldPosition) {
-                    case LEFT: driveTrain.moveForward(-0.90, -4.1);
-                        break;
-                    case CENTER: driveTrain.moveForward(-0.90, -3.7);
-                        break;
-                    case RIGHT: driveTrain.moveForward(-0.90, -3.95);
-                        break;
-                }
-                if (driveTrain.encoderTargetReached) {
-                    driveTrain.stopDriveMotors();
-                    advanceState();
-                }
-                break;
-
-            case 36:
-                stateGoal = "Robot Face Crater - Turn to -92 degrees";
-                //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.turnAbsolutePID(-130);
-
-                if (driveTrain.angleTargetReached) { //Use a boolean value that reads true when state goal is completed
-                    driveTrain.stopDriveMotors();
-                    advanceState();
-                }
-                break;
-
-            case 38:
                 stateGoal = "Park in Crater - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
-                driveTrain.moveForward(-0.90, -0.7);
+                switch (goldPosition) {
+                    case LEFT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                        break;
+                    case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                        break;
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(24));
+                        break;
+                }
                 if (driveTrain.encoderTargetReached) {
                     setTiltServos(TILT_MIN + 0.03);
                     driveTrain.stopDriveMotors();
