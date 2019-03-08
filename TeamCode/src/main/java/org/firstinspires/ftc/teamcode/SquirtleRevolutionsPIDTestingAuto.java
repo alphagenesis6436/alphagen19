@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * Updated by Alex on 2/11/2019.
  */
 @Autonomous(name = "SquirtleRevolutionsPIDTestingAuto", group = "default")
-//@Disabled
+@Disabled
 public class SquirtleRevolutionsPIDTestingAuto extends SquirtleOp {
     //Declare and Initialize any variables needed for this specific autonomous program
     double drivingTime = 0;

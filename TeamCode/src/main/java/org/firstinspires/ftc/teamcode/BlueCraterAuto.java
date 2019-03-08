@@ -267,7 +267,7 @@ public class BlueCraterAuto extends SquirtleOp {
                         break;
                     case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(47.5));
                         break;
-                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(50));
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(49));
                         break;
                 }
 

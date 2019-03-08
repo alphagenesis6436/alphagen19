@@ -215,7 +215,7 @@ public class RedCraterAuto extends SquirtleOp {
                 switch (goldPosition) {
                     case LEFT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(17));
                         break;
-                    case CENTER: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(9));
+                    case CENTER: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(10));
                         break;
                     case RIGHT: driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(14));
                         break;
@@ -235,7 +235,7 @@ public class RedCraterAuto extends SquirtleOp {
                 stateGoal = "Retreat From Mineral - Drive Forward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
-                    case CENTER: driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(8));
+                    case CENTER: driveTrain.moveForward(0.90, driveTrain.convertDistance2Rev(9));
                         break;
                     case RIGHT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(13));
                         break;
@@ -267,7 +267,7 @@ public class RedCraterAuto extends SquirtleOp {
                         break;
                     case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(47.5));
                         break;
-                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(50));
+                    case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(48));
                         break;
                 }
 
@@ -347,9 +347,9 @@ public class RedCraterAuto extends SquirtleOp {
                 stateGoal = "Park in Crater - Drive Backward";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 switch (goldPosition) {
-                    case LEFT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                    case LEFT: driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(24.5));
                         break;
-                    case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(22));
+                    case CENTER:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(24.5));
                         break;
                     case RIGHT:  driveTrain.moveForward(-0.90, -driveTrain.convertDistance2Rev(24));
                         break;
