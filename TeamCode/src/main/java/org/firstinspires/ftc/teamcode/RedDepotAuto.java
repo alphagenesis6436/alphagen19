@@ -218,13 +218,13 @@ public class RedDepotAuto extends SquirtleOp {
                 stateGoal = "Scan for Gold Mineral - Turn to Absolute -90 degrees";
                 //Display any current data needed to be seen during this state (if none is needed, omit this comment)
                 //turn at 15% power when robot is in range of RIGHT or CENTER mineral
-                if (driveTrain.inHeadingRange(-65, -10) || driveTrain.inHeadingRange(-105, -65)) {
+               // if (driveTrain.inHeadingRange(-65, -10) || driveTrain.inHeadingRange(-105, -65)) {
                     driveTrain.turnClockwise(-0.15);
-                }
+               // }
                 //turn at 90% power when robot is NOT in range of a mineral
-                else {
-                    driveTrain.turnAbsolutePID(-90);
-                }
+                //else {
+                   // driveTrain.turnAbsolutePID(-90);
+                //}
                 //if gold found, then it's either center or right position
                 if (goldAligned()) {
                     driveTrain.stopDriveMotors();

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
      */
 
     @TeleOp(name = "MichaelOp", group = "Default")
-    @Disabled
+    //@Disabled
     public class MichaelOp extends OpMode {
         //Declare any motors, servos, and sensors
         DcMotor leftMotor;
@@ -39,8 +39,7 @@ import com.qualcomm.robotcore.util.Range;
             leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
             //Initialize servos
-            clawArm = hardwareMap.servo.get("ca");
-            //Initialize sensors
+
 
             telemetry();
         }

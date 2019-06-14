@@ -6,28 +6,37 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
-/**
- * Updated by Jack 8/29/2018
- * blue rangerbot
- */
 
-@TeleOp(name = "OpMode Template", group = "Default")
-@Disabled
-public class JackOp extends OpMode {
+@TeleOp(name = "ArcadeOp", group = "Default")
+//@Disabled
+public class ArcadeOp extends OpMode {
     //Declare any motors, servos, and sensors
-    DriveTrain driveTrain = new DriveTrain(DriveMode.ARCADE, 2);
+    DcMotor FR;
+    DcMotor FL;
+
+
 
     //Declare any variables & constants pertaining to specific robot mechanisms (i.e. drive train)
+    final double DRIVE_PWR_MAX = 0.8;
+    double currentLeftPwr = 0;
+    double currentRightPwr = 0;
 
-    public JackOp() {}
+
+    public ArcadeOp() {}
 
     @Override public void init() {
         //Initialize motors & set direction
+        FR = hardwareMap.dcMotor.get("fr");
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        FL = hardwareMap.dcMotor.get("fl");
+        FL.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
         //Initialize servos
 
         //Initialize sensors
 
-        telemetry();
+        telemetry.addData(">", "Press Start to continue");
     }
     @Override public void loop() {
         //Update all the data based on driver input
@@ -41,34 +50,56 @@ public class JackOp extends OpMode {
         telemetry();
     }
 
-    void updateData() {
-        //Add in update methods for specific robot mechanisms
-    }
-
     void initialization() {
         //Clip and Initialize Specific Robot Mechanisms
+        currentLeftPwr = Range.clip(currentLeftPwr,-DRIVE_PWR_MAX,DRIVE_PWR_MAX);
+        FL.setPower(currentLeftPwr);
+        currentRightPwr = Range.clip(currentRightPwr,-DRIVE_PWR_MAX,DRIVE_PWR_MAX);
+        FR.setPower(currentRightPwr);
+
     }
     void telemetry() {
         //Show Data for Specific Robot Mechanisms
+        telemetry.addData("FR_PWR",FR.getPower());
+        telemetry.addData("FL_PWR",FL.getPower());
+
+    }
+
+    void updateData() {
+        //Add in update methods for specific robot mechanisms
+        updateArcadeDrive();
 
     }
 
     //Create Methods that will update the driver data
-
- /*
+    void updateArcadeDrive() {
+        currentLeftPwr = (-gamepad1.left_stick_y + gamepad1.right_stick_x) * DRIVE_PWR_MAX;
+        currentRightPwr = (-gamepad1.left_stick_y - gamepad1.right_stick_x) * DRIVE_PWR_MAX;
+    }
+    /*
      All update methods should be commented with:
          //Controlled by Driver (1 or 2)
          //Step 1: (Physical Instructions on how to control specific robot mechanism using controller buttons)
          //Step 2: (Physical Instructions on how to control specific robot mechanism using controller buttons)
          //Step ...: (Physical Instructions on how to control specific robot mechanism using controller buttons)
-  */
+    */
 
 
     //Create variables/methods that will be used in ALL autonomous programs for this specific robot
 
     double setTime; //used to measure the time period of each step in autonomous
     int state = 0; //used to control the steps taken during autonomous
-    String stateName = ""; //Overwrite this as the specific step used in Autonomous
+    String stateGoal = ""; //Overwrite this as the specific step used in Autonomous
+
+    void advanceState() {
+        state++;
+        setTime = this.time;
+    }
+
+    void advanceState(int skipState) {
+        state += (skipState * 2) + 1;
+        setTime = this.time;
+    }
 
     void resetEncoders() {
 
@@ -79,11 +110,13 @@ public class JackOp extends OpMode {
     void runConstantPower() {
 
     }
-    void resetSensors() {
+    void calibrateAutoVariables() {
 
     }
     //used to measure the amount of time passed since a new step in autonomous has started
     boolean waitSec(double elapsedTime) { return (this.time - setTime >= elapsedTime); }
 
 }
+
+
 

@@ -22,7 +22,8 @@ public class PrototypeOp extends OpMode {
 
     final double CLAW_ARM_START_POS = 0.5;
     final double MAX_CLAW_SPEED = (1.00) * 0.5;
-    double clawArmPosition = CLAW_ARM_START_POS;
+    double clawArmPosition = CLAW_ARM_START_POS; //beginning of the program
+
     final double CLAW_MAX = 1.0;
     final double CLAW_MIN = 0.0;
     final double DRIVE_PWR_MAX = 0.7;

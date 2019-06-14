@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "RangerOp", group = "Default")
-@Disabled
+//@Disabled
 public class RangerOp extends OpMode {
     //Declare any motors
     DcMotor leftDrive;
