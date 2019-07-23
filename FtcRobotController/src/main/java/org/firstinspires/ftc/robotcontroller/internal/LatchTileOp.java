@@ -26,7 +26,7 @@ public class LatchTileOp extends OpMode {
     double currentRightPwr = 0.0;
     final double LATCH_PWR = 0.80;
     double currentLatchPwr = 0.0;
-    DriveMode driveMode = DriveMode.TANKDRIVE;
+    DriveMode driveMode = DriveMode.TANK;
 
     public LatchTileOp() {}
 
@@ -81,16 +81,16 @@ public class LatchTileOp extends OpMode {
     //step 1: Press left/right bumper to select tank/arcade drive
     void updateDriveTrain() {
         if (gamepad1.left_bumper){
-            driveMode = DriveMode.TANKDRIVE;
+            driveMode = DriveMode.TANK;
         }
         else if (gamepad1.right_bumper){
-            driveMode = DriveMode.ARCADEDRIVE;
+            driveMode = DriveMode.ARCADE;
         }
 
         switch (driveMode) {
-            case TANKDRIVE: updateTankDrive();
+            case TANK: updateTankDrive();
                 break;
-            case ARCADEDRIVE: updateArcadeDrive();
+            case ARCADE: updateArcadeDrive();
                 break;
         }
     }
