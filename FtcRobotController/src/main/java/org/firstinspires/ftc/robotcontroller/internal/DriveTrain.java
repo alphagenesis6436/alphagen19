@@ -3,11 +3,8 @@ package org.firstinspires.ftc.robotcontroller.internal;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -15,47 +12,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class DriveTrain {
+public abstract class DriveTrain extends Mechanism implements Telemetrable {
 
-    public DriveTrain(DriveMode driveMode) {
-        this.driveMode = driveMode;
-        switch (driveMode) {
-            case SLIDE:
-            case MECANUM_X:
-            case MECANUM_O:
-            case HOLONOMIC: numOfMotors = 4;
-                break;
-        }
-    }
-    public DriveTrain(DriveMode driveMode, int numOfMotors) {
-        this.driveMode = driveMode;
-        this.numOfMotors = numOfMotors;
-    }
+    /** All constants necessary for FTC drive trains */
 
-    private DcMotor frontRight, frontLeft, backRight, backLeft; //Drive Motors
-    private Gamepad gamepad = null;
-    private Telemetry telemetry = null;
-    private HardwareMap hardwareMap = null;
+    public static final int COUNTS_PER_REVOLUTION_40 = 1120; //AndyMark 40:1 Motors
 
-    static final int COUNTS_PER_REVOLUTION_40 = 1120; //AndyMark 40:1 Motors
+    /** All fields necessary for FTC drive trains */
 
+    // Drive Motors: 0 -> frontLeft, 1 -> frontRight, 2 -> backLeft, 3 -> backRight
+    protected ArrayList<DcMotor> motors = new ArrayList<>();
+    protected int numOfMotors; //Only 2 and 4 are accepted values
+    protected double drivePwrMax = 0.80; //80% by default
+    protected double turnPwrMax = 0.60; //60% by default, only for slide/mecanum/holonomic
+    protected double gearRatio = 1; //Driven / Driver, 1 by default
 
+    /** Protected no-arg constructor */
 
-    //Class variables for TeleOp Use
-    private DriveMode driveMode;
-    private int numOfMotors; //Only 2 and 4 are accepted values
-    private double drivePwrMax = 0.80; //80% by default
-    private double turnPwrMax = 0.60; //60% by default, only for slide/mecanum/holonomic
-    private double gearRatio = 1; //Driven / Driver, 1 by default
-    private double frPower, flPower, brPower, blPower;
+    protected DriveTrain() { }
 
-    //Code to be run in the init() method of your OpMode
-    public void setDriveMode(DriveMode driveMode) {
-        this.driveMode = driveMode;
-    }
-    public void setNumOfMotors(int num) {
+    /** Accessor & Mutator Methods for class fields */
+
+    protected void setNumOfMotors(int num) {
         numOfMotors = num;
     }
     public void setDrivePwrMax(double maxPwr) {
@@ -67,6 +48,9 @@ public class DriveTrain {
     public void setGearRatio(double ratio) {
         gearRatio = ratio;
     }
+
+    /** Set Multiple fields at once */
+
     public void setConstants(double drivePwrMax, double turnPwrMax, double gearRatio) {
         setDrivePwrMax(drivePwrMax);
         setTurnPwrMax(turnPwrMax);
@@ -76,127 +60,27 @@ public class DriveTrain {
         setDrivePwrMax(drivePwrMax);
         setGearRatio(gearRatio);
     }
-    public void setGamepad(Gamepad gamepad) {
-        this.gamepad = gamepad;
-    }
-    public void setTelemetry(Telemetry telemetry) {
-        this.telemetry = telemetry;
-    }
-    public void setHardware(HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
-    }
-    public void syncOpMode(Gamepad gamepad, Telemetry telemetry, HardwareMap hardwareMap) {
-        setGamepad(gamepad);
-        setTelemetry(telemetry);
-        setHardware(hardwareMap);
-        startTime = System.nanoTime();
-    }
-    public void setMotors(DcMotor left, DcMotor right) {
-        frontLeft = left;
-        frontRight = right;
-        telemetry.addData(">", "Drive Train Initialization Successful");
-    }
-    public void setMotors(DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
-        this.frontLeft = frontLeft;
-        this.frontRight = frontRight;
-        this.backLeft = backLeft;
-        this.backRight = backRight;
-        telemetry.addData(">", "Drive Train Initialization Successful");
-    }
-    public void setMotors() {
-        if (hardwareMap != null) {
-            if (numOfMotors == 4) {
-                if (driveMode == DriveMode.SLIDE) {
-                    frontRight = hardwareMap.dcMotor.get("nd");
-                    frontLeft = hardwareMap.dcMotor.get("ed");
-                    backRight = hardwareMap.dcMotor.get("wd");
-                    backLeft = hardwareMap.dcMotor.get("sd");
-                }
-                else {
-                    frontRight = hardwareMap.dcMotor.get("fr");
-                    frontLeft = hardwareMap.dcMotor.get("fl");
-                    backRight = hardwareMap.dcMotor.get("br");
-                    backLeft = hardwareMap.dcMotor.get("bl");
 
-                }
-                frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-                frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-                backRight.setDirection(DcMotorSimple.Direction.FORWARD);
-                backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-            }
-            else {
-                frontRight = hardwareMap.dcMotor.get("rd");
-                frontLeft = hardwareMap.dcMotor.get("ld");
-                frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-                frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-            }
-            telemetry.addData(">", "Drive Train Initialization Successful");
+    /** init() method for all drive trains. user must input several strings of
+     * motor names in order from front to back then left to right. For example:
+     * Drive Motors: 0 -> frontLeft, 1 -> frontRight, 2 -> backLeft, 3 -> backRight */
+
+    @Override
+    public void init(String... motorNames) {
+        setNumOfMotors(motorNames.length);
+        for (int i = 0; i < numOfMotors; i++) {
+            motors.add(hardwareMap.dcMotor.get(motorNames[i]));
+            // set the direction of the motors
+            if (i % 2 == 0) motors.get(i).setDirection(DcMotorSimple.Direction.REVERSE);
+            else motors.get(i).setDirection(DcMotorSimple.Direction.FORWARD);
         }
-        else {
-            if (telemetry != null) telemetry.addData("Error", "Need to Initialize HardwareMap");
-        }
+        telemetry.addData(">", "DriveTrain.init() Successful");
     }
 
-    //Code to be run in the loop() method of your OpMode
-    public void update() {
-        if (gamepad != null) {
-            switch (driveMode) {
-                case TANK: updateTankDrive();
-                    break;
-                case ARCADE: updateArcadeDrive();
-                    break;
-                case SLIDE: updateSlideDrive();
-                    break;
-                case MECANUM_X: updateMecanumXDrive();
-                    break;
-                case MECANUM_O: updateMecanumODrive();
-                    break;
-                case HOLONOMIC: updateHolonomicDrive();
-                    break;
-            }
-        }
-        else {
-            if (telemetry != null) telemetry.addData("Error", "Need to Initialize Gamepad");
-        }
+    protected double clipPower(double power) {
+        return Range.clip(power, -drivePwrMax, drivePwrMax);
     }
 
-    private void updateTankDrive() {
-        flPower = -gamepad.left_stick_y * drivePwrMax;
-        blPower = -gamepad.left_stick_y * drivePwrMax;
-        frPower = -gamepad.right_stick_y * drivePwrMax;
-        brPower = -gamepad.right_stick_y * drivePwrMax;
-    }
-    private void updateArcadeDrive() {
-        flPower = (-gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
-        frPower = (-gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
-        blPower = (-gamepad.left_stick_y + gamepad.right_stick_x) * drivePwrMax;
-        brPower = (-gamepad.left_stick_y - gamepad.right_stick_x) * drivePwrMax;
-    }
-    private void updateSlideDrive() { //FL = East, BR = West, BL = South, FR = North
-        if (!(gamepad.left_stick_y < 0.05 && gamepad.left_stick_y > -0.05)) {
-            brPower = -gamepad.left_stick_y * drivePwrMax;
-            flPower = -gamepad.left_stick_y * drivePwrMax;
-        }
-        if (!(gamepad.left_stick_x < 0.05 && gamepad.left_stick_x > -0.05)) {
-            frPower = gamepad.left_stick_x * drivePwrMax;
-            blPower = gamepad.left_stick_x * drivePwrMax;
-        }
-        if (gamepad.left_stick_y == 0) {
-            brPower = 0;
-            flPower = 0;
-        }
-        if (gamepad.left_stick_x == 0) {
-            frPower = 0;
-            blPower = 0;
-        }
-        if (!(gamepad.right_stick_x < 0.05 && gamepad.right_stick_x > -0.05)) {
-            frPower = gamepad.right_stick_x * turnPwrMax * drivePwrMax;
-            blPower = -gamepad.right_stick_x * turnPwrMax * drivePwrMax;
-            flPower = -gamepad.right_stick_x * turnPwrMax * drivePwrMax;
-            brPower = gamepad.right_stick_x * turnPwrMax * drivePwrMax;
-        }
-
-    }
     private void updateMecanumXDrive() {
         frPower = (-gamepad.left_stick_y - gamepad.left_stick_x - gamepad.right_stick_x * turnPwrMax) * drivePwrMax;
         flPower = (-gamepad.left_stick_y + gamepad.left_stick_x + gamepad.right_stick_x * turnPwrMax) * drivePwrMax;
@@ -261,71 +145,6 @@ public class DriveTrain {
 
     }
 
-    public void initialize() {
-        if (numOfMotors == 4) {
-            flPower = Range.clip(flPower, -drivePwrMax, drivePwrMax);
-            frontLeft.setPower(flPower);
-            frPower = Range.clip(frPower, -drivePwrMax, drivePwrMax);
-            frontRight.setPower(frPower);
-            blPower = Range.clip(blPower, -drivePwrMax, drivePwrMax);
-            backLeft.setPower(blPower);
-            brPower = Range.clip(brPower, -drivePwrMax, drivePwrMax);
-            backRight.setPower(brPower);
-        }
-        else {
-            flPower = Range.clip(flPower, -drivePwrMax, drivePwrMax);
-            frontLeft.setPower(flPower);
-            frPower = Range.clip(frPower, -drivePwrMax, drivePwrMax);
-            frontRight.setPower(frPower);
-        }
-    }
-
-    public void telemetry() {
-        if (telemetry != null) {
-            switch (driveMode) {
-                case TANK:
-                    telemetry.addData("TANK DRIVE", "TELEMETRY");
-                    telemetry.addData(">>>Left Pwr", frontLeft.getPower());
-                    telemetry.addData(">>>Right Pwr", frontRight.getPower());
-                    break;
-                case ARCADE:
-                    telemetry.addData("ARCADE DRIVE", "TELEMETRY");
-                    telemetry.addData(">>>Left Pwr", frontLeft.getPower());
-                    telemetry.addData(">>>Right Pwr", frontRight.getPower());
-                    break;
-                case SLIDE:
-                    telemetry.addData("SLIDE DRIVE", "TELEMETRY");
-                    telemetry.addData(">>>North Pwr", frontRight.getPower());
-                    telemetry.addData(">>>South Pwr", backLeft.getPower());
-                    telemetry.addData(">>>West Pwr", backRight.getPower());
-                    telemetry.addData(">>>East Pwr", frontLeft.getPower());
-                    break;
-                case MECANUM_X:
-                    telemetry.addData("MECANUM X DRIVE", "TELEMETRY");
-                    telemetry.addData(">>>Front Left Pwr", frontLeft.getPower());
-                    telemetry.addData(">>>Front Right Pwr", frontRight.getPower());
-                    telemetry.addData(">>>Back Left Pwr", backLeft.getPower());
-                    telemetry.addData(">>>Back Right Pwr", backRight.getPower());
-                    break;
-                case MECANUM_O:
-                    telemetry.addData("MECANUM O DRIVE", "TELEMETRY");
-                    telemetry.addData(">>>Front Left Pwr", frontLeft.getPower());
-                    telemetry.addData(">>>Front Right Pwr", frontRight.getPower());
-                    telemetry.addData(">>>Back Left Pwr", backLeft.getPower());
-                    telemetry.addData(">>>Back Right Pwr", backRight.getPower());
-                    break;
-                case HOLONOMIC:
-                    telemetry.addData("HOLONOMIC DRIVE", "TELEMETRY");
-                    telemetry.addData(">>>Front Left Pwr", frontLeft.getPower());
-                    telemetry.addData(">>>Front Right Pwr", frontRight.getPower());
-                    telemetry.addData(">>>Back Left Pwr", backLeft.getPower());
-                    telemetry.addData(">>>Back Right Pwr", backRight.getPower());
-                    break;
-            }
-        }
-
-    }
-
 
     //Class variables for Autonomous Use
     private BNO055IMU imu; //For detecting rotation
@@ -345,7 +164,7 @@ public class DriveTrain {
     public void resetStartTime() {
         startTime = System.nanoTime();
     }
-    public void initializeIMU() {
+    protected void initializeIMU() {
         BNO055IMU.Parameters parameterz = new BNO055IMU.Parameters();
         parameterz.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameterz.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -365,128 +184,41 @@ public class DriveTrain {
         return -angles.firstAngle;
     }
 
+    private int getEncoderCount() { return motors.get(0).getCurrentPosition(); }
+
     public void resetEncoders() {
-        if (disableEncoderCalibration) {
-            frontRight.setPower(0);
-            frontLeft.setPower(0);
-            if (numOfMotors == 4) {
-                backRight.setPower(0);
-                backLeft.setPower(0);
-            }
-        }
-        else {
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            if (numOfMotors == 4) {
-                backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
-        }
-    }
-    private void runConstantSpeed() {
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (numOfMotors == 4) {
-            backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-    }
-    private void runConstantPower() {
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        if (numOfMotors == 4) {
-            backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        for (DcMotor motor: motors)
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public void move(double pwr_fr, double pwr_fl, double pwr_br, double pwr_bl) {
-        frontRight.setPower(pwr_fr);
-        frontLeft.setPower(pwr_fl);
-        if (numOfMotors == 4) {
-            backRight.setPower(pwr_br);
-            backLeft.setPower(pwr_bl);
-        }
+    protected void runConstantSpeed() {
+        for (DcMotor motor: motors)
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    protected void runConstantPower() {
+        for (DcMotor motor: motors)
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     public void stopDriveMotors() {
-        move(0, 0, 0, 0);
+        for (DcMotor motor: motors)
+            motor.setPower(0);
     }
 
-    public void moveForward(double power) {
-        switch (encoderMode) {
-            case CONSTANT_SPEED: runConstantSpeed();
-                break;
-            case CONSTANT_POWER: runConstantPower();
-                break;
-        }
-        switch (driveMode) {
-            case TANK:
-            case ARCADE:
-            case MECANUM_X:
-            case MECANUM_O:
-            case HOLONOMIC: move(power, power, power, power);
-                break;
-            case SLIDE: move(0, power, power, 0);
-                break;
-        }
-    }
-    public void moveForward(double speed, double revolutions) {
+    public abstract void move(double... velocities);
+
+    public abstract void moveForward(double velocity);
+    public void moveForward(double velocity, double revolutions) {
         //Proportional Drive Control: for the last half rotation of the motor,
         //the motors will decelerate to from the input speed to 10% speed
         double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
-        double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION_40;
-        double error = target - frontLeft.getCurrentPosition();
+        double kp = 2 * (Math.abs(velocity) - 0.10) / COUNTS_PER_REVOLUTION_40;
+        double error = target - getEncoderCount();
         if (!encoderTargetReached) {
             if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 2) {
-                speed = (0.10 * error / Math.abs(error)) + (error * kp);
+                velocity = (0.10 * error / Math.abs(error)) + (error * kp);
             }
-            moveForward(speed);
-        }
-        if (Math.abs(error) <= 4) {
-            stopDriveMotors();
-            encoderTargetReached = true;
-        }
-        else {//Wait until target position is reached
-            telemetry.addData("Rotations left", String.format("%.2f", error / COUNTS_PER_REVOLUTION_40 / gearRatio));
-        }
-    }
-    public void moveRight(double power) {
-        switch (encoderMode) {
-            case CONSTANT_SPEED: runConstantSpeed();
-                break;
-            case CONSTANT_POWER: runConstantPower();
-                break;
-        }
-        switch (driveMode) {
-            case TANK:
-            case ARCADE: telemetry.addData("Error", "Current Drive Mode Can't Move Right");
-                break;
-            case MECANUM_O: move(power, -power, -power, power);
-                break;
-            case MECANUM_X:
-            case HOLONOMIC: move(-power, power, power, -power);
-                break;
-            case SLIDE: move(power, 0, 0, power);
-                break;
-        }
-    }
-    public void moveRight(double speed, double revolutions) {
-        //Proportional Drive Control: for the last half rotation of the motor,
-        //the motors will decelerate to from the input speed to 10% speed
-        double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
-        double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION_40;
-        double error;
-        if (driveMode != DriveMode.MECANUM_X || driveMode != DriveMode.HOLONOMIC) {
-            error = target - frontRight.getCurrentPosition();
-        }
-        else {
-            error = target - frontLeft.getCurrentPosition();
-        }
-        if (!encoderTargetReached) {
-            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 2) {
-                speed = (0.10 * error / Math.abs(error)) + (error * kp);
-            }
-            moveRight(speed);
+            moveForward(velocity);
         }
         if (Math.abs(error) <= 4) {
             stopDriveMotors();
@@ -497,121 +229,16 @@ public class DriveTrain {
         }
     }
 
-    public void moveForwardRight(double power) {
-        switch (encoderMode) {
-            case CONSTANT_SPEED: runConstantSpeed();
-                break;
-            case CONSTANT_POWER: runConstantPower();
-                break;
-        }
-        switch (driveMode) {
-            case TANK:
-            case ARCADE: telemetry.addData("Error", "Current Drive Mode Can't Move Diagonally");
-                break;
-            case MECANUM_O: move(power, 0, 0, power);
-                break;
-            case MECANUM_X:
-            case HOLONOMIC: move(0, power, power, 0);
-                break;
-            case SLIDE: move(power, power, power, power);
-                break;
-        }
-    }
-    public void moveForwardRight(double speed, double revolutions) {
-        //Proportional Drive Control: for the last half rotation of the motor,
-        //the motors will decelerate to from the input speed to 10% speed
-        double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
-        double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION_40;
-        double error;
-        if (driveMode != DriveMode.MECANUM_X || driveMode != DriveMode.HOLONOMIC) {
-            error = target - frontRight.getCurrentPosition();
-        }
-        else {
-            error = target - frontLeft.getCurrentPosition();
-        }
-        if (!encoderTargetReached) {
-            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 2) {
-                speed = (0.10 * error / Math.abs(error)) + (error * kp);
-            }
-            moveForwardRight(speed);
-        }
-        if (Math.abs(error) <= 4) {
-            stopDriveMotors();
-            encoderTargetReached = true;
-        }
-        else {//Wait until target position is reached
-            telemetry.addData("Rotations left", String.format("%.2f", error / COUNTS_PER_REVOLUTION_40 / gearRatio));
-        }
-    }
-    public void moveForwardLeft(double power) {
-        switch (encoderMode) {
-            case CONSTANT_SPEED: runConstantSpeed();
-                break;
-            case CONSTANT_POWER: runConstantPower();
-                break;
-        }
-        switch (driveMode) {
-            case TANK:
-            case ARCADE: telemetry.addData("Error", "Current Drive Mode Can't Move Diagonally");
-                break;
-            case MECANUM_O: move(0, power, power, 0);
-                break;
-            case MECANUM_X:
-            case HOLONOMIC: move(power, 0, 0, power);
-                break;
-            case SLIDE: move(-power, power, power, -power);
-                break;
-        }
-    }
-    public void moveForwardLeft(double speed, double revolutions) {
-        //Proportional Drive Control: for the last half rotation of the motor,
-        //the motors will decelerate to from the input speed to 10% speed
-        double target = revolutions * COUNTS_PER_REVOLUTION_40 * gearRatio;
-        double kp = 2 * (Math.abs(speed) - 0.10) / COUNTS_PER_REVOLUTION_40;
-        double error;
-        if (driveMode == DriveMode.MECANUM_X || driveMode == DriveMode.HOLONOMIC) {
-            error = target - frontRight.getCurrentPosition();
-        }
-        else {
-            error = target - frontLeft.getCurrentPosition();
-        }
-        if (!encoderTargetReached) {
-            if (Math.abs(error) <= COUNTS_PER_REVOLUTION_40 / 2) {
-                speed = (0.10 * error / Math.abs(error)) + (error * kp);
-            }
-            moveForwardLeft(speed);
-        }
-        if (Math.abs(error) <= 4) {
-            stopDriveMotors();
-            encoderTargetReached = true;
-        }
-        else {//Wait until target position is reached
-            telemetry.addData("Rotations left", String.format("%.2f", error / COUNTS_PER_REVOLUTION_40 / gearRatio));
-        }
-    }
-
-    public void turnClockwise(double power) {
-        runConstantSpeed();
-        switch (driveMode) {
-            case TANK:
-            case ARCADE:
-            case MECANUM_O:
-            case MECANUM_X:
-            case HOLONOMIC: move(-power, power, -power, power);
-                break;
-            case SLIDE: move(power, -power, power, -power);
-                break;
-        }
-    }
+    public abstract void turnClockwise(double angularVelocity);
     public void turnClockwise(int targetAngle) {
         updateAngles();
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
         double k = 0.005; //experimentally found
         double e = targetAngle + angles.firstAngle; //clockwise is negative for firstAngle
-        double power = (0.05 * e / Math.abs(e)) + k * e;
-        power = Range.clip(power, -1.0, 1.0);
+        double angularVelocity = (0.05 * e / Math.abs(e)) + k * e;
+        angularVelocity = Range.clip(angularVelocity, -1.0, 1.0);
         if (Math.abs(e) >= 2)
-            turnClockwise(power);
+            turnClockwise(angularVelocity);
         else {
             stopDriveMotors();
             angleTargetReached = true;
@@ -623,10 +250,10 @@ public class DriveTrain {
         telemetry.addData("Heading", String.format("%.0f", getHeading()));
         anglePID.setTargetValue(targetAngle);
         anglePID.update(-angles.firstAngle, getRuntime());
-        double power = anglePID.adjustmentValue();
-        power = Range.clip(power, -1, 1); //ensure power doesn't exceed max speed
+        double angularVelocity = anglePID.adjustmentValue();
+        angularVelocity = Range.clip(angularVelocity, -1, 1); //ensure power doesn't exceed max speed
         if (Math.abs(anglePID.getError()) >= 5) //5 degree angle slack / uncertainty
-            turnClockwise(power);
+            turnClockwise(angularVelocity);
         else {
             stopDriveMotors();
             anglePID.reset();
@@ -636,10 +263,6 @@ public class DriveTrain {
     }
 }
 
-//This enum allows us to switch between Drive Modes more elegantly than using boolean variables
-enum DriveMode {
-    TANK, ARCADE, MECANUM_X, MECANUM_O, SLIDE, HOLONOMIC;
-}
 //This enum allows us to switch between Encoder Modes for Autonomous
 enum EncoderMode {
     CONSTANT_SPEED, CONSTANT_POWER;

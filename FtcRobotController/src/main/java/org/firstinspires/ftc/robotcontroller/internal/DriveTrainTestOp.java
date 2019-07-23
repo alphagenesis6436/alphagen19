@@ -24,7 +24,7 @@ public class DriveTrainTestOp extends OpMode {
         //Initialize motors & set direction
         driveTrain.syncOpMode(gamepad1, telemetry, hardwareMap);
         driveTrain.setDrivePwrMax(DRIVE_PWR_MAX);
-        driveTrain.setMotors();
+        driveTrain.setMotorNames();
 
         telemetry.addData(">", "Press Start to continue");
     }
