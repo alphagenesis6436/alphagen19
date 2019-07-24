@@ -49,7 +49,11 @@ public class SlideDrive extends DriveTrain {
 
     @Override
     public void telemetry() {
-
+        telemetry.addData("DriveTrain","SlideDrive");
+        telemetry.addData("Left Front Pwr", motors.get(0).getPower());
+        telemetry.addData("Right Front Pwr", motors.get(1).getPower());
+        telemetry.addData("Left Back Pwr", motors.get(2).getPower());
+        telemetry.addData("Right Back Pwr", motors.get(3).getPower());
     }
 
     @Override
