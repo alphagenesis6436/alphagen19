@@ -14,14 +14,14 @@ public abstract class Mechanism {
 
     protected Mechanism() {}
 
-    protected void syncOpMode(Gamepad gamepad, Telemetry telemetry, HardwareMap hardwareMap) {
+    public void syncOpMode(Gamepad gamepad, Telemetry telemetry, HardwareMap hardwareMap) {
         gamepad1 = gamepad;
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         startTime = System.nanoTime();
     }
 
-    protected void syncOpMode(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hardwareMap) {
+    public void syncOpMode(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, HardwareMap hardwareMap) {
         syncOpMode(gamepad1, telemetry, hardwareMap);
         this.gamepad2 = gamepad2;
     }
