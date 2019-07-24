@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
 
 public class ArcadeDrive extends ClassicDrive {
     @Override

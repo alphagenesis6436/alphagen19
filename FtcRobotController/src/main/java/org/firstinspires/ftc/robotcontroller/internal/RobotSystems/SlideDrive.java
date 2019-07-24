@@ -1,4 +1,5 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
+
 /** motor order: 0 -> east, 1 -> north, 2 -> south, 3 -> west */
 public class SlideDrive extends OmnidirectionalDrive {
 

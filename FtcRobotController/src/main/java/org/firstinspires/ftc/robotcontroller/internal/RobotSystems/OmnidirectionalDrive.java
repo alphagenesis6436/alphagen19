@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
 
 public abstract class OmnidirectionalDrive extends DriveTrain {
 

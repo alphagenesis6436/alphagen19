@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -31,6 +31,4 @@ public abstract class Mechanism {
     public abstract void update();
 }
 
-interface Telemetrable {
-    void telemetry();
-}
+

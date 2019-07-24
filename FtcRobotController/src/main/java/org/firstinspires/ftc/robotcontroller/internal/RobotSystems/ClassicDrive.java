@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
 /** motor order: 0 -> (front)left, 1 -> (front)right, 2 -> back-left, 3 -> back-right */
 public abstract class ClassicDrive extends DriveTrain {
 

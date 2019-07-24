@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcontroller.internal.PID;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -199,7 +200,4 @@ public abstract class DriveTrain extends Mechanism implements Telemetrable {
     }
 }
 
-//This enum allows us to switch between Encoder Modes for Autonomous
-enum EncoderMode {
-    CONSTANT_SPEED, CONSTANT_POWER;
-}
+

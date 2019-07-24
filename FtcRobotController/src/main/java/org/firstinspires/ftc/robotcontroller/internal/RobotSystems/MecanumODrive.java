@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.robotcontroller.internal;
+package org.firstinspires.ftc.robotcontroller.internal.RobotSystems;
 
-public class MecanumXDrive extends OmnidirectionalDrive {
+public class MecanumODrive extends OmnidirectionalDrive {
     @Override
     public void moveRight(double velocity) {
 
@@ -56,9 +56,9 @@ public class MecanumXDrive extends OmnidirectionalDrive {
                 power *= -gamepad1.right_stick_x;
             switch (i) {
                 case 0:
-                case 3: power += gamepad1.left_stick_x; break;
+                case 3: power -= gamepad1.left_stick_x; break;
                 case 1:
-                case 2: power -= gamepad1.left_stick_x;
+                case 2: power += gamepad1.left_stick_x;
             }
             power -= gamepad1.left_stick_y;
             power *= drivePwrMax;
