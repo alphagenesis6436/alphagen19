@@ -42,7 +42,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "OpMode Template", group = "Default")
 @Disabled
-public class OpModeTemplate extends OpMode {
+public abstract class OpModeTemplate extends OpMode {
     //Declare any motors, servos, and sensors
 
 
@@ -62,30 +62,18 @@ public class OpModeTemplate extends OpMode {
         telemetry.addData(">", "Press Start to continue");
     }
     @Override public void loop() {
-        //Update all the data based on driver input
+        //Update all the data based on driver input & set to hardware devices
         updateData();
-
-        /* Clip Variables to make sure they don't exceed their
-         * ranged values and Set them to the Motors/Servos */
-        initialization();
 
         //Show the Real Values of the Data Using Telemetry
         telemetry();
     }
 
-    void initialization() {
-        //Clip and Initialize Specific Robot Mechanisms
+    //Show Data for Specific Robot Mechanisms
+    abstract void telemetry();
 
-    }
-    void telemetry() {
-        //Show Data for Specific Robot Mechanisms
-
-    }
-
-    void updateData() {
-        //Add in update methods for specific robot mechanisms
-
-    }
+    //Add in update methods for specific robot mechanisms
+    abstract void updateData();
 
     //Create Methods that will update the driver data
 
@@ -114,15 +102,7 @@ public class OpModeTemplate extends OpMode {
         setTime = this.time;
     }
 
-    void resetEncoders() {
 
-    }
-    void runConstantSpeed() {
-
-    }
-    void runConstantPower() {
-
-    }
     void calibrateAutoVariables() {
 
     }
