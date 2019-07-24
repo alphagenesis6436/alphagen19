@@ -6,6 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcontroller.internal.RobotSystems.Mechanism;
+
+import java.util.ArrayList;
+
 /**
  * Created by Alex on 6/1/2017.
  * Updated by Alex on 9/30/2018
@@ -42,25 +46,14 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "OpMode Template", group = "Default")
 @Disabled
-public abstract class OpModeTemplate extends OpMode {
+public abstract class TeleOpMode extends OpMode {
     //Declare any motors, servos, and sensors
-
-
 
     //Declare any variables & constants pertaining to specific robot mechanisms (i.e. drive train)
 
 
-    public OpModeTemplate() {}
+    public TeleOpMode() {}
 
-    @Override public void init() {
-        //Initialize motors & set direction
-
-        //Initialize servos
-
-        //Initialize sensors
-
-        telemetry.addData(">", "Press Start to continue");
-    }
     @Override public void loop() {
         //Update all the data based on driver input & set to hardware devices
         updateData();

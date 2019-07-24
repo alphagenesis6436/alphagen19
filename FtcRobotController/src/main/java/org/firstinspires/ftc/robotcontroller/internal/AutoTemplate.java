@@ -62,11 +62,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  */
 @Autonomous(name = "AutoTemplate", group = "default")
 @Disabled
-public class AutoTemplate extends OpModeTemplate {
+public class AutoTemplate extends TeleOpMode {
     //Declare and Initialize any variables needed for this specific autonomous program
 
 
     public AutoTemplate() {}
+
+    @Override
+    public void init() {
+
+    }
 
     @Override
     public void loop(){
@@ -79,7 +84,6 @@ public class AutoTemplate extends OpModeTemplate {
             case 0: //Use this state to reset all hardware devices
                 stateGoal = "Initial Calibration";
                 calibrateAutoVariables();
-                resetEncoders();
                 advanceState();
                 break;
 
@@ -97,18 +101,26 @@ public class AutoTemplate extends OpModeTemplate {
                 stateGoal = "Autonomous Complete";
                 //Set all motors to zero and servos to initial positions
                 calibrateAutoVariables();
-                resetEncoders();
                 break;
 
             default://Default state used to reset all hardware devices to ensure no errors
                 stateGoal = "Calibrating";
                 calibrateAutoVariables();
-                resetEncoders();
                 if (waitSec(0.01)) {
                     advanceState();
                 }
                 break;
         }
+    }
+
+    @Override
+    void telemetry() {
+
+    }
+
+    @Override
+    void updateData() {
+
     }
 
     //Create any methods needed for this specific autonomous program

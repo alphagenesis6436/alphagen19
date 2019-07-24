@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcontroller.internal.RobotSystems.EncoderMode;
 
 /**
  * Updated by Alex on 6/1/2017.

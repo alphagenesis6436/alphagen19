@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import java.util.concurrent.TimeUnit;
 
-public class DriveTrain {
+public class DriveTrain{
 
     public DriveTrain(DriveMode driveMode) {
         this.driveMode = driveMode;

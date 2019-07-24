@@ -3,6 +3,8 @@ package org.firstinspires.ftc.robotcontroller.internal;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+import org.firstinspires.ftc.robotcontroller.internal.RobotSystems.EncoderMode;
+
 /**
  * Updated by Alex on 11/5/2017.
  */
