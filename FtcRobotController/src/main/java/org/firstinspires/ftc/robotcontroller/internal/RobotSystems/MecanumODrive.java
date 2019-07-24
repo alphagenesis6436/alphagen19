@@ -32,7 +32,7 @@ public class MecanumODrive extends DriveTrain{
         telemetry.addData("Left Front Pwr", motors.get(0).getPower());
         telemetry.addData("Right Front Pwr", motors.get(1).getPower());
         telemetry.addData("Left Back Pwr", motors.get(2).getPower());
-        telemetry.addData("Rigth Back Pwr", motors.get(3).getPower());
+        telemetry.addData("Right Back Pwr", motors.get(3).getPower());
     }
 
     @Override
